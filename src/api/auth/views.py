@@ -29,7 +29,7 @@ class LoginView(View):
                 if not user.check_password(password):
                     raise Exception('Incorrect password.')
                 return JsonResponse({
-                    'token': jwt.encode({'email': user.email}, settings.SECRET_KEY, algorithm='HS256').decode('utf-8')
+                    'token': jwt.encode({'email': user.email}, settings.JWT_SECRET, algorithm='HS256').decode('utf-8')
                 }, status=200)
             except:
                 return JsonResponse({
@@ -56,7 +56,7 @@ class SignupView(View):
 
             user = get_user_model().objects.create_user(email, password)
             return JsonResponse({
-                'token': jwt.encode({'email': user.email}, settings.SECRET_KEY, algorithm='HS256').decode('utf-8')
+                'token': jwt.encode({'email': user.email}, settings.JWT_SECRET, algorithm='HS256').decode('utf-8')
             }, status=200)
         else:
             return JsonResponse({
@@ -103,7 +103,7 @@ class SendResetPasswordEmailView(View):
             token = jwt.encode({
                 'email': user.email,
                 'created_at': datetime.now().timestamp(),
-            }, settings.SECRET_KEY, algorithm='HS256').decode('utf-8')
+            }, settings.JWT_SECRET, algorithm='HS256').decode('utf-8')
             send_mail(
                 'Reset password',
                 f'Token: {token}',
@@ -125,7 +125,7 @@ class ResetPasswordView(View):
         new_password = data.get('new_password', None)
 
         try:
-            payload = jwt.decode(token, settings.SECRET_KEY, algorithms=['HS256'])
+            payload = jwt.decode(token, settings.JWT_SECRET, algorithms=['HS256'])
             created_at = datetime.fromtimestamp(payload['created_at'])
             created_from_now = datetime.now() - created_at
             if created_from_now > timedelta(hours=24):

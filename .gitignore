@@ -1,6 +1,7 @@
 .vscode/
 /venv/
 /static/
-/config/local_settings.py
+local_settings.py
 __pycache__
 *.pyc
+.env
