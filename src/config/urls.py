@@ -21,3 +21,8 @@ urlpatterns = [
     url(r'^admin/', admin.site.urls),
     url(r'^api/', include('api.urls')),
 ]
+
+handler500 = 'api.utils.errors.handler500'
+handler400 = 'api.utils.errors.handler400'
+handler404 = 'api.utils.errors.handler404'
+handler403 = 'api.utils.errors.handler403'

@@ -16,6 +16,8 @@ services:
     restart: always
     volumes:
       - static_volume:/app/src/static/
+    env_file:
+      - .env
     depends_on:
       - db
 
@@ -23,7 +25,9 @@ services:
     build: ./nginx
     restart: always
     ports:
-      - 1337:80
+      - ${PORT}:80
+    env_file:
+      - .env
     depends_on:
       - app
       - swagger

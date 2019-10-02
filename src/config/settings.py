@@ -126,6 +126,12 @@ USE_TZ = True
 STATIC_URL = '/static/'
 STATIC_ROOT = os.path.join(BASE_DIR, 'static')
 
+MEDIA_URL = '/media/'
+MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
+
+FILE_UPLOAD_DIRECTORY_PERMISSIONS = 0o755
+FILE_UPLOAD_PERMISSIONS = 0o644
+
 AUTH_USER_MODEL = 'cuser.CUser'
 
 EMAIL_BACKEND = 'django.core.mail.backends.console.EmailBackend'

@@ -6,13 +6,28 @@ from django.views import View
 from django.contrib.auth import get_user_model
 from django.conf import settings
 from django.core.mail import send_mail
-from django.http import HttpResponseForbidden
+from django.core.exceptions import PermissionDenied
+
+from api.utils.errors import error_response
+
+
+def serialize_user(user):
+    return dict(
+        id=user.id,
+        email=user.email,
+    )
+
+def serialize_auth(user):
+    return dict(
+        token=jwt.encode({'email': user.email}, settings.JWT_SECRET, algorithm='HS256').decode('utf-8'),
+        user=serialize_user(user),
+    )
 
 
 class AuthenticatedView(View):
     def dispatch(self, request, *args, **kwargs):
         if not request.user:
-            return HttpResponseForbidden()
+            raise PermissionDenied
 
         return super(AuthenticatedView, self).dispatch(request, *args, **kwargs)
 
@@ -28,17 +43,11 @@ class LoginView(View):
                 user = get_user_model().objects.get(email=email)
                 if not user.check_password(password):
                     raise Exception('Incorrect password.')
-                return JsonResponse({
-                    'token': jwt.encode({'email': user.email}, settings.JWT_SECRET, algorithm='HS256').decode('utf-8')
-                }, status=200)
+                return JsonResponse(serialize_auth(user), status=200)
             except:
-                return JsonResponse({
-                    'errors': ['Unable to login with the provided credentials.']
-                }, status=400)
+                return error_response('auth', 'Unable to login with the provided credentials.')
         else:
-            return JsonResponse({
-                'errors': ['Please enter email and password.']
-            }, status=400)
+            return error_response('auth', 'Please enter email and password.')
 
 
 class SignupView(View):
@@ -50,18 +59,12 @@ class SignupView(View):
         if email and password:
             already_exists = get_user_model().objects.filter(email=email).count() > 0
             if already_exists:
-                return JsonResponse({
-                    'errors': ['A user with this email already exists.']
-                }, status=400)
+                return error_response('auth', 'A user with this email already exists.')
 
             user = get_user_model().objects.create_user(email, password)
-            return JsonResponse({
-                'token': jwt.encode({'email': user.email}, settings.JWT_SECRET, algorithm='HS256').decode('utf-8')
-            }, status=200)
+            return JsonResponse(serialize_auth(user), status=200)
         else:
-            return JsonResponse({
-                'errors': ['Please enter email and password.']
-            }, status=400)
+            return error_response('auth', 'Please enter email and password.')
 
 
 class ChangePasswordView(AuthenticatedView):
@@ -73,9 +76,7 @@ class ChangePasswordView(AuthenticatedView):
 
         if old_password and new_password:
             if not user.check_password(old_password):
-                return JsonResponse({
-                    'errors': ['Incorrect old password.']
-                }, status=400)
+                return error_response('auth', 'Incorrect old password.')
 
             user.set_password(new_password)
             user.save()
@@ -84,9 +85,7 @@ class ChangePasswordView(AuthenticatedView):
                 'success': True
             }, status=200)
         else:
-            return JsonResponse({
-                'errors': ['Please enter old password and new password.']
-            }, status=400)
+            return error_response('auth', 'Please enter old password and new password.')
 
 
 class SendResetPasswordEmailView(View):
@@ -94,9 +93,7 @@ class SendResetPasswordEmailView(View):
         data = json.loads(request.body)
         email = data.get('email', None)
         if not email:
-            return JsonResponse({
-                'errors': ['Please enter email.']
-            }, status=400)
+            return error_response('auth', 'Please enter email.')
 
         try:
             user = get_user_model().objects.get(email=email)
@@ -131,9 +128,7 @@ class ResetPasswordView(View):
             if created_from_now > timedelta(hours=24):
                 raise Exception('Outdated.')
         except:
-            return JsonResponse({
-                'errors': ['Token is incorrect.']
-            }, status=400)
+            return error_response('auth', 'Token is incorrect.')
 
         user = get_user_model().objects.get(email=payload['email'])
         user.set_password(new_password)

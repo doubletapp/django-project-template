@@ -1,4 +1,4 @@
 FROM swaggerapi/swagger-ui
 
-COPY swagger.json /
-ENV SWAGGER_JSON /swagger.json
+COPY swagger.yml /
+ENV SWAGGER_JSON /swagger.yml
