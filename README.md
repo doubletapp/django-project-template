@@ -88,3 +88,26 @@ sudo docker-compose up -d --build --force-recreate && \
 sudo docker exec -it project_name-api_app_1 python manage.py migrate && \
 sudo docker exec -it project_name-api_app_1 python manage.py collectstatic --no-input --clear
 ```
+
+## URLs
+API Base URL:
+```
+http://project_name.doubletapp.ru/api
+```
+Doc:
+```
+http://project_name.doubletapp.ru/swagger
+```
+URL:
+```
+http://project_name.doubletapp.ru/admin
+```
+---
+Secret header for all requests:
+```
+Secret: change_me!
+```
+Header for authenticated requests:
+```
+Authorization: JWT token
+```
