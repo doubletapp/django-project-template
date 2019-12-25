@@ -1,4 +1,4 @@
-Django==2.2.5
+Django==2.2.8
 django-environ==0.4.5
 django-username-email==2.2.4
 gunicorn==19.9.0
