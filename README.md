@@ -10,6 +10,7 @@ To use this template:
 
 
 # Local development
+virtual environment
 ```
 python3 -m venv venv
 source venv/bin/activate
@@ -23,7 +24,10 @@ CREATE USER project_name_admin WITH PASSWORD 'project_name_admin';
 GRANT ALL PRIVILEGES ON DATABASE project_name TO project_name_admin;
 ```
 
+migrate and run
 ```
+python src/manage.py makemigrations
+python src/manage.py migrate
 python src/manage.py runserver
 ```
 
