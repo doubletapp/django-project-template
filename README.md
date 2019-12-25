@@ -38,15 +38,6 @@ https://docs.docker.com/install/linux/docker-ce/ubuntu/
 ## Install docker-compose
 https://docs.docker.com/compose/install/
 
-### Docker
-```
-/.env
-```
-example:
-```
-PORT=1337
-```
-
 ## Nginx (host machine)
 ```
 server {
@@ -64,8 +55,8 @@ server {
 
 ## Start
 ```
-cmod +x start.sh
-./start.sh
+cmod +x docker_start.sh
+./docker_start.sh
 ```
 
 ## URLs
