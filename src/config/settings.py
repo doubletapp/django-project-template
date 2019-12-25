@@ -11,6 +11,19 @@ https://docs.djangoproject.com/en/1.11/ref/settings/
 """
 
 import os
+import environ
+
+
+env = environ.Env(
+    DB_NAME=(str, 'project_name'),
+    DB_USER=(str, 'project_name_admin'),
+    DB_PASSWORD=(str, 'project_name_admin'),
+    DB_HOST=(str, 'localhost'),
+    DEBUG=(bool, True),
+)
+env_location = os.path.join(os.path.dirname(__file__), '..', '..', '.env')
+environ.Env.read_env(env_file=env_location)
+
 
 # Build paths inside the project like this: os.path.join(BASE_DIR, ...)
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
@@ -25,7 +38,8 @@ AUTH_SECRET = 'change_me!'
 JWT_SECRET = 'change_me!'
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = True
+DEBUG = env('DEBUG')
+print(DEBUG)
 
 ALLOWED_HOSTS = ['127.0.0.1', 'project_name.doubletapp.ru']
 
@@ -76,17 +90,6 @@ TEMPLATES = [
 WSGI_APPLICATION = 'config.wsgi.application'
 
 
-# Database
-# https://docs.djangoproject.com/en/1.11/ref/settings/#databases
-
-DATABASES = {
-    'default': {
-        'ENGINE': 'django.db.backends.sqlite3',
-        'NAME': os.path.join(BASE_DIR, 'db.sqlite3'),
-    }
-}
-
-
 # Password validation
 # https://docs.djangoproject.com/en/1.11/ref/settings/#auth-password-validators
 
@@ -132,22 +135,18 @@ MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
 FILE_UPLOAD_DIRECTORY_PERMISSIONS = 0o755
 FILE_UPLOAD_PERMISSIONS = 0o644
 
-AUTH_USER_MODEL = 'cuser.CUser'
+AUTH_USER_MODEL = 'api.User'
 
 EMAIL_BACKEND = 'django.core.mail.backends.console.EmailBackend'
 # EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
 
 DATABASES = {
     'default': {
-        'ENGINE': 'django.contrib.gis.db.backends.postgis',
-        'NAME': 'postgres',
-        'USER': 'postgres',
-        'HOST': 'db',
+        'ENGINE': 'django.db.backends.postgresql',
+        'NAME': env('DB_NAME'),
+        'USER': env('DB_USER'),
+        'PASSWORD': env('DB_PASSWORD'),
+        'HOST': env('DB_HOST'),
         'PORT': 5432,
     }
 }
-
-try:
-    from .local_settings import *
-except ImportError:
-    pass

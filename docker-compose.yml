@@ -2,12 +2,14 @@ version: '3'
 
 services:
   db:
+    container_name: "project_name-api_db"
     image: mdillon/postgis:11-alpine
     restart: always
     volumes:
       - db_volume:/var/lib/postgresql/data/
 
   app:
+    container_name: "project_name-api_app"
     ulimits:
       nofile:
         soft: 4096
@@ -16,12 +18,11 @@ services:
     restart: always
     volumes:
       - static_volume:/app/src/static/
-    env_file:
-      - .env
     depends_on:
       - db
 
   nginx:
+    container_name: "project_name-api_nginx"
     build: ./nginx
     restart: always
     ports:
@@ -35,6 +36,7 @@ services:
       - static_volume:/app/src/static/
 
   swagger:
+    container_name: "project_name-api_swagger"
     build: ./swagger
     restart: always
 

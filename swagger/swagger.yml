@@ -2,7 +2,7 @@ openapi: 3.0.0
 info:
   description: ''
   version: '1.0'
-  title: Confr.app API
+  title: project_name API
 servers:
   - url: http://project_name.doubletapp.ru/api
 paths:

@@ -16,6 +16,7 @@ source venv/bin/activate
 pip install -r requirements.txt
 ```
 
+psql
 ```
 CREATE DATABASE project_name;
 CREATE USER project_name_admin WITH PASSWORD 'project_name_admin';
@@ -26,37 +27,12 @@ GRANT ALL PRIVILEGES ON DATABASE project_name TO project_name_admin;
 python src/manage.py runserver
 ```
 
-# Docker development
+# Docker deployment
 ## Install docker
 https://docs.docker.com/install/linux/docker-ce/ubuntu/
 
 ## Install docker-compose
 https://docs.docker.com/compose/install/
-
-## Local Settings
-### Django
-```
-/src/config/local_settings.py
-```
-example:
-```
-SECRET_KEY = 'ula3!*a=yi3s2c+cheho#d3%*2g@5dp8w#1n5!gic3p(k@e35q'
-AUTH_SECRET = 'BuzOqkKctCjcM1pvHC1OSagv4Wr23tYnXF0komnkx4Pq88Tw1TiUBJ8CAGXQHqQ1_lUovnnl-qpix8NAV8A-Y9InlFph1v6GgbNNyfblZH3-q5Hy12Vfg0VeAaVpoWua'
-JWT_SECRET = 'f-1KX3azkZy69tNz-IJ1RN35xiiwwlIDB03gbi4oUzxS9JvirtQLRh4WXsFAPVNFBu3ATORMrQ70onuzJT_nJ52kTNyQtPBCEYdvgrOrbUKeyoGTnf7m7Cx-zaPnz8fr'
-
-DATABASES = {
-    'default': {
-        'ENGINE': 'django.contrib.gis.db.backends.postgis',
-        'NAME': 'confapp',
-        'USER': 'confapp_admin',
-        'PASSWORD': 'confapp_admin',
-        'HOST': '127.0.0.1',
-        'PORT': 5432,
-    }
-}
-
-DEBUG = True
-```
 
 ### Docker
 ```
@@ -84,9 +60,8 @@ server {
 
 ## Start
 ```
-sudo docker-compose up -d --build --force-recreate && \
-sudo docker exec -it project_name-api_app_1 python manage.py migrate && \
-sudo docker exec -it project_name-api_app_1 python manage.py collectstatic --no-input --clear
+cmod +x start.sh
+./start.sh
 ```
 
 ## URLs
