@@ -38,7 +38,7 @@ https://docs.docker.com/install/linux/docker-ce/ubuntu/
 ## Install docker-compose
 https://docs.docker.com/compose/install/
 
-## Nginx (host machine)
+## http NGINX (host machine)
 ```
 server {
     listen 80;
@@ -46,6 +46,31 @@ server {
 
     location / {
         proxy_pass http://localhost:{PORT}; // replace port with port from .env
+        proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
+        proxy_set_header Host $host;
+        proxy_redirect off;
+    }
+}
+```
+
+## https NGINX (host machine)
+https://certbot.eff.org/lets-encrypt/ubuntuxenial-nginx
+```
+server {
+    listen 80;
+    server_name project_name.doubletapp.ru;
+    return 301 https://project_name.doubletapp.ru$request_uri;
+}
+
+server {
+    listen 443 ssl;
+    server_name project_name.doubletapp.ru;
+
+    ssl_certificate /etc/letsencrypt/live/project_name.doubletapp.ru/fullchain.pem;
+    ssl_certificate_key /etc/letsencrypt/live/project_name.doubletapp.ru/privkey.pem;
+
+    location / {
+        proxy_pass http://localhost:3000;
         proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
         proxy_set_header Host $host;
         proxy_redirect off;
