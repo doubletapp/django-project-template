@@ -22,6 +22,10 @@ psql
 CREATE DATABASE project_name;
 CREATE USER project_name_admin WITH PASSWORD 'project_name_admin';
 GRANT ALL PRIVILEGES ON DATABASE project_name TO project_name_admin;
+ALTER ROLE project_name_admin SET client_encoding TO 'utf8';
+
+# if problems with encoding
+update pg_database set encoding = pg_char_to_encoding('UTF8');
 ```
 
 migrate and run
