@@ -35,7 +35,7 @@ class AuthenticatedView(View):
 class LoginView(View):
     def post(self, request):
         data = json.loads(request.body)
-        email = data.get('email', None)
+        email = data.get('email', '').lower()
         password = data.get('password', None)
 
         if email and password:
@@ -53,7 +53,7 @@ class LoginView(View):
 class SignupView(View):
     def post(self, request):
         data = json.loads(request.body)
-        email = data.get('email', None)
+        email = data.get('email', '').lower()
         password = data.get('password', None)
 
         if email and password:
@@ -91,7 +91,7 @@ class ChangePasswordView(AuthenticatedView):
 class SendResetPasswordEmailView(View):
     def post(self, request):
         data = json.loads(request.body)
-        email = data.get('email', None)
+        email = data.get('email', '').lower()
         if not email:
             return error_response('auth', 'Please enter email.')
 
