@@ -35,12 +35,12 @@ class AuthenticatedView(View):
 class LoginView(View):
     def post(self, request):
         data = json.loads(request.body)
-        email = data.get('email', '').lower()
+        email = data.get('email', '').lower().strip()
         password = data.get('password', None)
 
         if email and password:
             try:
-                user = get_user_model().objects.get(email=email)
+                user = get_user_model().objects.get(email__iexact=email)
                 if not user.check_password(password):
                     raise Exception('Incorrect password.')
                 return JsonResponse(serialize_auth(user), status=200)
@@ -53,11 +53,11 @@ class LoginView(View):
 class SignupView(View):
     def post(self, request):
         data = json.loads(request.body)
-        email = data.get('email', '').lower()
+        email = data.get('email', '').lower().strip()
         password = data.get('password', None)
 
         if email and password:
-            already_exists = get_user_model().objects.filter(email=email).count() > 0
+            already_exists = get_user_model().objects.filter(email__iexact=email).count() > 0
             if already_exists:
                 return error_response('auth', 'A user with this email already exists.')
 
@@ -70,8 +70,8 @@ class SignupView(View):
 class ChangePasswordView(AuthenticatedView):
     def post(self, request):
         data = json.loads(request.body)
-        old_password = data.get('old_password', None)
-        new_password = data.get('new_password', None)
+        old_password = data.get('old_password', '').strip()
+        new_password = data.get('new_password', '').strip()
         user = request.user
 
         if old_password and new_password:
@@ -91,7 +91,7 @@ class ChangePasswordView(AuthenticatedView):
 class SendResetPasswordEmailView(View):
     def post(self, request):
         data = json.loads(request.body)
-        email = data.get('email', '').lower()
+        email = data.get('email', '').lower().strip()
         if not email:
             return error_response('auth', 'Please enter email.')
 
