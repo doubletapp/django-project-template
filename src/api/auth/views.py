@@ -119,7 +119,7 @@ class ResetPasswordView(View):
     def post(self, request):
         data = json.loads(request.body)
         token = data.get('token', None)
-        new_password = data.get('new_password', None)
+        new_password = data.get('new_password', '').strip()
 
         try:
             payload = jwt.decode(token, settings.JWT_SECRET, algorithms=['HS256'])
