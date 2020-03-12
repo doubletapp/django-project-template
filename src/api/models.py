@@ -4,4 +4,4 @@ from __future__ import unicode_literals
 from django.db import models
 
 
-from api.auth.models import User
+from .auth.models import AdminUser

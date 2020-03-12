@@ -35,6 +35,26 @@ python src/manage.py migrate
 python src/manage.py runserver
 ```
 
+# Local development with docker
+
+Build images
+```bash
+docker-compose -f dev-docker-compose.yml build
+```
+Make migration and migrate
+```bash
+docker-compose -f dev-docker-compose.yml run app python manage.py makemigrations
+docker-compose -f dev-docker-compose.yml run app python manage.py migrate
+```
+Create superuser
+```bash
+docker-compose -f dev-docker-compose.yml run app python manage.py createsuperuser
+```
+And run up without detached mode
+```bash
+docker-compose -f dev-docker-compose.yml up
+```
+
 # Docker deployment
 ## Install docker
 https://docs.docker.com/install/linux/docker-ce/ubuntu/

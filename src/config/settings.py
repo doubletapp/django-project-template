@@ -41,7 +41,11 @@ JWT_SECRET = 'change_me!'
 DEBUG = env('DEBUG')
 print(DEBUG)
 
-ALLOWED_HOSTS = ['127.0.0.1', 'project_name.doubletapp.ru']
+ALLOWED_HOSTS = [
+    '127.0.0.1',
+    'project_name.doubletapp.ru',
+    'localhost'
+]
 
 
 # Application definition
@@ -123,6 +127,46 @@ USE_L10N = True
 USE_TZ = True
 
 
+# S3 settings
+
+# AWS_ACCESS_KEY_ID = env('AWS_ACCESS_KEY_ID')
+# AWS_SECRET_ACCESS_KEY = env('AWS_SECRET_ACCESS_KEY')
+# AWS_STORAGE_BUCKET_NAME = env('AWS_STORAGE_BUCKET_NAME')
+# AWS_S3_CUSTOM_DOMAIN = '%s.s3.amazonaws.com' % AWS_STORAGE_BUCKET_NAME
+# AWS_S3_OBJECT_PARAMETERS = {
+#     'CacheControl': 'max-age=86400',
+# }
+# AWS_LOCATION = env('AWS_LOCATION')
+# DEFAULT_FILE_STORAGE = 'storages.backends.s3boto3.S3Boto3Storage'
+
+
+# Facebook settings
+
+# FACEBOOK_URL = 'https://graph.facebook.com/v5.0/me'
+# FB_APP_TOKEN = env('FB_APP_TOKEN')
+
+
+# Apple SignUp settings
+
+# REDIRECT_URI = env('REDIRECT_URI')
+# CLIENT_ID = env('CLIENT_ID')
+# APPLE_TEAM_ID = env('APPLE_TEAM_ID')
+# APPLE_SECRET_TOKEN = env.str('APPLE_SECRET_TOKEN', multiline=True)
+# APPLE_KID = env('APPLE_KID')
+
+
+# Send email settings
+
+# EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
+#
+# EMAIL_HOST = 'smtp.gmail.com'
+# EMAIL_HOST_USER = env('EMAIL_HOST_USER')
+# EMAIL_HOST_PASSWORD = env('EMAIL_HOST_PASSWORD')
+# EMAIL_PORT = 465
+# EMAIL_USE_TLS = False
+# EMAIL_USE_SSL = True
+
+
 # Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/1.11/howto/static-files/
 
@@ -135,7 +179,7 @@ MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
 FILE_UPLOAD_DIRECTORY_PERMISSIONS = 0o755
 FILE_UPLOAD_PERMISSIONS = 0o644
 
-AUTH_USER_MODEL = 'api.User'
+AUTH_USER_MODEL = 'api.AdminUser'
 
 EMAIL_BACKEND = 'django.core.mail.backends.console.EmailBackend'
 # EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'

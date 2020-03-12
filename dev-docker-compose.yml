@@ -1,0 +1,27 @@
+version: '3'
+
+services:
+  db:
+    container_name: "project_name-api_db"
+    image: mdillon/postgis:11-alpine
+    restart: always
+    volumes:
+      - ./postgres_data:/var/lib/postgresql/data/
+
+  app:
+    container_name: "project_name-api_app"
+    command: python3 manage.py runserver 0.0.0.0:8000
+    ulimits:
+      nofile:
+        soft: 4096
+        hard: 4096
+    ports:
+      - ${PORT_DJANGO}:8000
+    build: .
+    env_file:
+      - .env
+    restart: always
+    volumes:
+      - ./src:/app/src
+    depends_on:
+      - db
