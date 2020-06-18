@@ -12,40 +12,31 @@ https://docs.djangoproject.com/en/1.11/ref/settings/
 
 import os
 import environ
+import json
 
 
 env = environ.Env(
-    DB_NAME=(str, 'project_name'),
-    DB_USER=(str, 'project_name_admin'),
-    DB_PASSWORD=(str, 'project_name_admin'),
-    DB_HOST=(str, 'localhost'),
-    DEBUG=(bool, True),
+    SECRET_KEY=(str, ''),
+    AUTH_SECRET=(str, ''),
+    JWT_SECRET=(str, ''),
+    POSTGRES_HOST=(str, ''),
+    POSTGRES_DB=(str, ''),
+    POSTGRES_USER=(str, ''),
+    POSTGRES_PASSWORD=(str, ''),
+    DEBUG=(bool, False),
+    ALLOWED_HOSTS=(str, ''),
 )
-env_location = os.path.join(os.path.dirname(__file__), '..', '..', '.env')
-environ.Env.read_env(env_file=env_location)
+
+SECRET_KEY = env('SECRET_KEY')
+AUTH_SECRET = env('AUTH_SECRET')
+JWT_SECRET = env('JWT_SECRET')
 
 
 # Build paths inside the project like this: os.path.join(BASE_DIR, ...)
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 
-
-# Quick-start development settings - unsuitable for production
-# See https://docs.djangoproject.com/en/1.11/howto/deployment/checklist/
-
-# SECURITY WARNING: keep the secret key used in production secret!
-SECRET_KEY = 'change_me!'
-AUTH_SECRET = 'change_me!'
-JWT_SECRET = 'change_me!'
-
-# SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = env('DEBUG')
-print(DEBUG)
-
-ALLOWED_HOSTS = [
-    '127.0.0.1',
-    'project_name.doubletapp.ru',
-    'localhost'
-]
+ALLOWED_HOSTS = json.loads(env('ALLOWED_HOSTS'))
 
 
 # Application definition
@@ -58,7 +49,6 @@ INSTALLED_APPS = [
     'django.contrib.messages',
     'django.contrib.staticfiles',
     'django.contrib.gis',
-    'cuser',
     'api',
 ]
 
@@ -128,7 +118,6 @@ USE_TZ = True
 
 
 # S3 settings
-
 # AWS_ACCESS_KEY_ID = env('AWS_ACCESS_KEY_ID')
 # AWS_SECRET_ACCESS_KEY = env('AWS_SECRET_ACCESS_KEY')
 # AWS_STORAGE_BUCKET_NAME = env('AWS_STORAGE_BUCKET_NAME')
@@ -140,23 +129,8 @@ USE_TZ = True
 # DEFAULT_FILE_STORAGE = 'storages.backends.s3boto3.S3Boto3Storage'
 
 
-# Facebook settings
-
-# FACEBOOK_URL = 'https://graph.facebook.com/v5.0/me'
-# FB_APP_TOKEN = env('FB_APP_TOKEN')
-
-
-# Apple SignUp settings
-
-# REDIRECT_URI = env('REDIRECT_URI')
-# CLIENT_ID = env('CLIENT_ID')
-# APPLE_TEAM_ID = env('APPLE_TEAM_ID')
-# APPLE_SECRET_TOKEN = env.str('APPLE_SECRET_TOKEN', multiline=True)
-# APPLE_KID = env('APPLE_KID')
-
-
 # Send email settings
-
+EMAIL_BACKEND = 'django.core.mail.backends.console.EmailBackend'
 # EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
 #
 # EMAIL_HOST = 'smtp.gmail.com'
@@ -181,16 +155,13 @@ FILE_UPLOAD_PERMISSIONS = 0o644
 
 AUTH_USER_MODEL = 'api.AdminUser'
 
-EMAIL_BACKEND = 'django.core.mail.backends.console.EmailBackend'
-# EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
-
 DATABASES = {
     'default': {
-        'ENGINE': 'django.db.backends.postgresql',
-        'NAME': env('DB_NAME'),
-        'USER': env('DB_USER'),
-        'PASSWORD': env('DB_PASSWORD'),
-        'HOST': env('DB_HOST'),
+        'ENGINE': 'django.contrib.gis.db.backends.postgis',
+        'NAME': env('POSTGRES_DB'),
+        'USER': env('POSTGRES_USER'),
+        'PASSWORD': env('POSTGRES_PASSWORD'),
+        'HOST': env('POSTGRES_HOST'),
         'PORT': 5432,
     }
 }

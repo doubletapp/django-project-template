@@ -1,4 +1,4 @@
-FROM python:3.7
+FROM python:3.6
 
 ENV PYTHONUNBUFFERED 1
 ENV PYTHONDONTWRITEBYTECODE 1
@@ -8,8 +8,10 @@ RUN mkdir -p /app/src/
 RUN apt-get update
 RUN apt-get -y install libgdal-dev
 
-COPY requirements.txt /app/
+COPY Pipfile* /app/
 RUN cd /app/ && \
+    pip install pipenv && \
+    pipenv lock --requirements > requirements.txt && \
     pip install --disable-pip-version-check --no-cache-dir -r requirements.txt
 
 COPY src /app/src/

@@ -1,67 +1,21 @@
 # Template
 To use this template:
-1. `git clone https://github.com/doubletapp/django-project-template.git`
-2. `mv django-project-template project_name-api`
-3. `cd project_name-api && rm -rf .git`
-4. `git remote add origin your-project-git`
-5. replace all occurrences of `project_name` in code with your project name
-6. replace secrets (`change_me!` in code) with your secrets
-7. remove Template section from README.md
+1. `git clone https://github.com/doubletapp/django-project-template.git project_name`
+2. `cd project_name && rm -rf .git`
+3. `git remote add origin your-project-git`
+4. replace all occurrences of `project_name` in code with your project name
+5. remove Template section from README.md
 
 
-# Local development
-virtual environment
-```
-python3 -m venv venv
-source venv/bin/activate
-pip install -r requirements.txt
-```
-
-psql
-```
-CREATE DATABASE project_name;
-CREATE USER project_name_admin WITH PASSWORD 'project_name_admin';
-GRANT ALL PRIVILEGES ON DATABASE project_name TO project_name_admin;
-ALTER ROLE project_name_admin SET client_encoding TO 'utf8';
-
-# if problems with encoding
-update pg_database set encoding = pg_char_to_encoding('UTF8');
-```
-
-migrate and run
-```
-python src/manage.py makemigrations
-python src/manage.py migrate
-python src/manage.py runserver
-```
-
-# Local development with docker
-
-Build images
-```bash
-docker-compose -f dev-docker-compose.yml build
-```
-Make migration and migrate
-```bash
-docker-compose -f dev-docker-compose.yml run app python manage.py makemigrations
-docker-compose -f dev-docker-compose.yml run app python manage.py migrate
-```
-Create superuser
-```bash
-docker-compose -f dev-docker-compose.yml run app python manage.py createsuperuser
-```
-And run up without detached mode
-```bash
-docker-compose -f dev-docker-compose.yml up
-```
-
-# Docker deployment
+# Docker
 ## Install docker
 https://docs.docker.com/install/linux/docker-ce/ubuntu/
 
 ## Install docker-compose
 https://docs.docker.com/compose/install/
 
+
+# Nginx
 ## http NGINX (host machine)
 ```
 server {
@@ -100,33 +54,4 @@ server {
         proxy_redirect off;
     }
 }
-```
-
-## Start
-```
-cmod +x docker_start.sh
-./docker_start.sh
-```
-
-## URLs
-API Base URL:
-```
-http://project_name.doubletapp.ru/api
-```
-Doc:
-```
-http://project_name.doubletapp.ru/swagger
-```
-URL:
-```
-http://project_name.doubletapp.ru/admin
-```
----
-Secret header for all requests:
-```
-Secret: change_me!
-```
-Header for authenticated requests:
-```
-Authorization: JWT token
 ```
