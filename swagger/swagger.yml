@@ -6,7 +6,7 @@ info:
 servers:
   - url: http://project_name.doubletapp.ru/api
 paths:
-  /login/:
+  /login:
     post:
       tags:
         - authentication
@@ -43,7 +43,7 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/ErrorResponse'
-  /signup/:
+  /signup:
     post:
       tags:
         - authentication
@@ -80,7 +80,7 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/ErrorResponse'
-  /change_password/:
+  /change_password:
     post:
       tags:
         - authentication
@@ -122,7 +122,7 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/ErrorResponse'
-  /send_reset_password_email/:
+  /send_reset_password_email:
     post:
       tags:
         - authentication
@@ -156,7 +156,7 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/ErrorResponse'
-  /reset_password/:
+  /reset_password:
     post:
       tags:
         - authentication
