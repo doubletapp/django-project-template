@@ -8,6 +8,7 @@ To use this template:
 
 
 # Docker
+---
 ## Install docker
 https://docs.docker.com/install/linux/docker-ce/ubuntu/
 
@@ -16,6 +17,7 @@ https://docs.docker.com/compose/install/
 
 
 # Nginx
+---
 ## http NGINX (host machine)
 ```
 server {
@@ -55,3 +57,34 @@ server {
     }
 }
 ```
+
+
+# GitLab CI
+---
+## Envitonment
+1. Open `Operations/Environments` in GitLab project and create New Environment (example: test and prod)
+2.  Open `Settings/CI|CD/Variables` and create all required variables from .env.example (be careful with \n)
+3. Open `Settings/Repository/Deploy-Tokens` and create token for CI (input `DEPLOY_TOKEN_LOGIN: login` and `DEPLOY_TOKEN_PSSWD: password` for this token in `CI|CD/Variables`)
+4. Open `env/{env}/docker-compose.yml` in folder project and input necessary variable `app/environment`
+5. Create branch `testing`
+6. Create testing file in bucket (example: `autotest/{env}`)
+7.  Disable Shared Runners in `Settings/CI|CD/Runners`
+
+
+## Runner
+1. Install (in host machine) gitlab-runnet 
+https://docs.gitlab.com/runner/install/linux-repository.html 
+2. Register runner 
+https://docs.gitlab.com/runner/register/
+**Сonfiguration:**
+`GitLab instance:` https://gitlab.com
+`Token runner:` check from Setting/CI|CD/Runner/Specific-Runners 
+`Description:` runner-project-name
+`Tags:` nothing
+`Runner executor:` docker
+`Docker image:` docker/compose:latest
+3. Fix error x509
+open `sudo nano /etc/gitlab-runner/config.toml`
+change `volumes = ["/cache"]` to `volumes = ["/var/run/docker.sock:/var/run/docker.sock", "/cache"]`
+4. Run: `sudo gitlab-runner run`
+
