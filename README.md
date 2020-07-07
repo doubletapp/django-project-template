@@ -72,19 +72,19 @@ server {
 
 
 ## Runner
-1. Install (in host machine) gitlab-runnet 
+1. Install (in host machine) gitlab-runnet  
 https://docs.gitlab.com/runner/install/linux-repository.html 
-2. Register runner 
-https://docs.gitlab.com/runner/register/
-**Сonfiguration:**
-`GitLab instance:` https://gitlab.com
-`Token runner:` check from Setting/CI|CD/Runner/Specific-Runners 
-`Description:` runner-project-name
-`Tags:` nothing
-`Runner executor:` docker
-`Docker image:` docker/compose:latest
-3. Fix error x509
-open `sudo nano /etc/gitlab-runner/config.toml`
-change `volumes = ["/cache"]` to `volumes = ["/var/run/docker.sock:/var/run/docker.sock", "/cache"]`
-4. Run: `sudo gitlab-runner run`
+2. Register runner     
+https://docs.gitlab.com/runner/register/  
+**Сonfiguration:**  
+`GitLab instance:` https://gitlab.com  
+`Token runner:` check from Setting/CI|CD/Runner/Specific-Runners  
+`Description:` runner-project-name  
+`Tags:` nothing  
+`Runner executor:` docker  
+`Docker image:` docker/compose:latest  
+3. Fix error x509  
+open `sudo nano /etc/gitlab-runner/config.toml`  
+change `volumes = ["/cache"]` to `volumes = ["/var/run/docker.sock:/var/run/docker.sock", "/cache"]`  
+4. Run: `sudo gitlab-runner run`  
 
