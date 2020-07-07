@@ -1,0 +1,103 @@
+image: docker/compose:latest
+
+services:
+  - postgres
+  - docker:dind
+
+variables:
+  POSTGRES_HOST_AUTH_METHOD: trust
+  DOCKER_DRIVER: overlay2
+
+before_script:
+  - docker login -u "${DEPLOY_TOKEN_LOGIN}" -p "${DEPLOY_TOKEN_PSSWD}" registry.gitlab.com
+  - apk add make
+
+stages:
+  - build
+  - lint
+  - test
+  - deploy
+
+build_image_test:
+  stage: build
+  environment:
+    name: test
+  script:
+    - docker build --pull -t "$CI_REGISTRY_IMAGE" .
+    - docker push "$CI_REGISTRY_IMAGE"
+  only:
+    - testing
+
+build_image_prod:
+  stage: build
+  environment:
+    name: prod
+  script:
+    - docker build --pull -t "$CI_REGISTRY_IMAGE" .
+    - docker push "$CI_REGISTRY_IMAGE"
+  only:
+    - master
+
+flake8_test:
+  stage: lint
+  environment:
+    name: test
+  script:
+    - docker pull "$CI_REGISTRY_IMAGE"
+    - make lint
+  only:
+    - testing
+
+flake8_prod:
+  stage: lint
+  environment:
+    name: prod
+  script:
+    - docker pull "$CI_REGISTRY_IMAGE"
+    - make lint
+  only:
+    - master
+
+unittest_test:
+  stage: test
+  environment:
+    name: test
+  script:
+    - docker pull "$CI_REGISTRY_IMAGE"
+    - make test
+  only:
+    - testing
+
+unittest_prod:
+  stage: test
+  environment:
+    name: prod
+  script:
+    - docker pull "$CI_REGISTRY_IMAGE"
+    - make test
+  only:
+    - master
+
+deploy_test:
+  stage: deploy
+  when: manual
+  environment:
+    name: test
+  script:
+    - docker pull "$CI_REGISTRY_IMAGE"
+    - make down collectstatic migrate up
+  only:
+    - testing
+
+deploy_prod:
+  stage: deploy
+  when: manual
+  environment:
+    name: prod
+  script:
+    - docker pull "$CI_REGISTRY_IMAGE"
+    - make down collectstatic migrate up
+  only:
+    - master
+
+
