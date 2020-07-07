@@ -1,7 +1,6 @@
-from django.conf.urls import url
-from django.urls import include
+from django.urls import include, path
 
 
 urlpatterns = [
-    url(r'^auth/', include('api.auth.urls')),
+    path('auth/', include('api.auth.urls')),
 ]

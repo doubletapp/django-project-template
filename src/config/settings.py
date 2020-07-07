@@ -14,6 +14,8 @@ import os
 import environ
 import json
 
+from corsheaders.defaults import default_headers
+
 
 env = environ.Env(
     SECRET_KEY=(str, ''),
@@ -50,11 +52,13 @@ INSTALLED_APPS = [
     'django.contrib.staticfiles',
     'django.contrib.gis',
     'api',
+    'corsheaders',
 ]
 
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
+    'corsheaders.middleware.CorsMiddleware',
     'django.middleware.common.CommonMiddleware',
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
@@ -62,6 +66,11 @@ MIDDLEWARE = [
     'api.auth.middlewares.SecretAuthenticationMiddleware',
     'api.auth.middlewares.JWTAuthenticationMiddleware',
 ]
+
+CORS_ORIGIN_ALLOW_ALL = True
+CORS_ALLOW_HEADERS = default_headers + (
+    'secret',
+)
 
 ROOT_URLCONF = 'config.urls'
 
