@@ -40,8 +40,6 @@ BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 DEBUG = env('DEBUG')
 ALLOWED_HOSTS = json.loads(env('ALLOWED_HOSTS'))
 
-ENVIRONMENT = env('ENVIRONMENT')
-
 
 # Application definition
 

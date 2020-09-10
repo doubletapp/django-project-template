@@ -13,9 +13,9 @@ django-environ = "*"
 gunicorn = "*"
 postgis = "*"
 psycopg2 = "*"
-jwt = "*"
 pillow = "*"
 django-cors-headers = "*"
+pyjwt = "*"
 
 [requires]
 python_version = "3.6"

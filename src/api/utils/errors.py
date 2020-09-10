@@ -10,6 +10,20 @@ def error_response(code, message, status=400):
     }, status=status)
 
 
+def not_valid_response(errors, status=422):
+    return JsonResponse({
+        'errors': [{
+            'code': 'validation_failed',
+            'message': 'Validation failed',
+            'fields': errors
+        }]
+    }, status=status)
+
+
+def unauthorized_response():
+    return error_response('unauthorized', 'The request has not been applied because it lacks valid authentication credentials for the target resource.', status=401)
+
+
 def print_traceback():
     type, value, tb = sys.exc_info()
     print(traceback.format_exception(type, value, tb))

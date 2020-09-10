@@ -91,9 +91,10 @@ paths:
             type: string
           required: true
         - in: header
-          name: AUTHENTICATION
+          name: AUTHORIZATION
           schema:
             type: string
+            example: Bearer token
           required: true
       requestBody:
         required: true

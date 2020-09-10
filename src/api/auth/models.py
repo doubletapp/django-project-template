@@ -1,8 +1,13 @@
+import jwt
+from datetime import datetime
+
+from django.conf import settings
 from django.contrib.auth.models import AbstractUser
 from django.db import models
 from django.contrib.auth.hashers import (
     make_password, get_hasher
 )
+from django.contrib.auth.hashers import check_password
 from django.utils.translation import gettext_lazy as _
 
 
@@ -11,21 +16,33 @@ class AdminUser(AbstractUser):
 
 
 class APIUser(models.Model):
-    first_name = models.CharField(max_length=64, blank=True, null=True, verbose_name=_('First name'))
-    last_name = models.CharField(max_length=64, blank=True, null=True, verbose_name=_('Last name'))
-    password = models.CharField(max_length=256, blank=True, null=True, verbose_name=_('Password'))
-    email = models.EmailField(blank=True, null=True, verbose_name=_('Email'))
-    avatar = models.ImageField(upload_to='avatar', blank=True, null=True, verbose_name=_('Avatar'))
+    email = models.EmailField(unique=True, verbose_name=_('Email'))
+    password = models.CharField(max_length=255, verbose_name=_('Password'))
 
     class Meta:
         verbose_name = _('APIUser')
         verbose_name_plural = _('APIUsers')
 
     def __str__(self):
-        return '{}:{}:{}'.format(self.email, self.first_name, self.last_name)
+        return self.email
+
+    @staticmethod
+    def create_user(email, password):
+        return APIUser.objects.create(email=email, password=make_password(password))
 
     @staticmethod
     def make_password(password, salt=None, hasher='default'):
         hasher = get_hasher(hasher)
         salt = salt or hasher.salt()
         return hasher.encode(password, salt)
+
+    def get_auth_token(self):
+        now = datetime.now().isoformat()
+        return jwt.encode(
+            dict(id=self.id, datetime=now),
+            settings.JWT_SECRET,
+            algorithm='HS256'
+        ).decode('utf-8')
+
+    def check_password(self, password):
+        return check_password(password, self.password)
