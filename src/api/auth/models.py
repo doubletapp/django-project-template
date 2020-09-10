@@ -1,5 +1,6 @@
 import jwt
 from datetime import datetime
+from enum import Enum
 
 from django.conf import settings
 from django.contrib.auth.models import AbstractUser
@@ -9,6 +10,11 @@ from django.contrib.auth.hashers import (
 )
 from django.contrib.auth.hashers import check_password
 from django.utils.translation import gettext_lazy as _
+
+
+class TokenTypes(Enum):
+    authorization = 'authorization'
+    reset_password = 'reset_password'
 
 
 class AdminUser(AbstractUser):
@@ -36,13 +42,23 @@ class APIUser(models.Model):
         salt = salt or hasher.salt()
         return hasher.encode(password, salt)
 
-    def get_auth_token(self):
+    def _get_token(self, type):
         now = datetime.now().isoformat()
         return jwt.encode(
-            dict(id=self.id, datetime=now),
+            dict(
+                type=type,
+                id=self.id,
+                datetime=now,
+            ),
             settings.JWT_SECRET,
             algorithm='HS256'
         ).decode('utf-8')
+
+    def get_auth_token(self):
+        return self._get_token(TokenTypes.authorization.name)
+
+    def get_reset_password_token(self):
+        return self._get_token(TokenTypes.reset_password.name)
 
     def check_password(self, password):
         return check_password(password, self.password)

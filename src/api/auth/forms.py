@@ -4,11 +4,6 @@ from django.utils.translation import gettext as _
 from .models import APIUser
 
 
-class NewPasswordForm(forms.Form):
-    password = forms.PasswordInput()
-    password_confirm = forms.PasswordInput()
-
-
 class SignUpForm(forms.Form):
     email = forms.EmailField()
     password = forms.CharField()
@@ -19,6 +14,7 @@ class SignUpForm(forms.Form):
 
         if APIUser.objects.filter(email=email).exists():
             raise forms.ValidationError(_('The user with the provided email already exists.'))
+
         return email
 
     def clean_password(self):
@@ -55,3 +51,18 @@ class ChangePasswordForm(forms.Form):
         if not self.request.user.check_password(old_password):
             raise forms.ValidationError(_('Incorrect password.'))
         return old_password
+
+
+class SendResetPasswordEmailForm(forms.Form):
+    email = forms.EmailField()
+
+    def clean_email(self):
+        email = self.cleaned_data['email']
+        email = email.lower().strip()
+
+        return email
+
+
+class ResetPasswordForm(forms.Form):
+    token = forms.CharField()
+    password = forms.CharField()

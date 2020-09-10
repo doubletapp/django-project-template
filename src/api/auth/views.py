@@ -2,20 +2,24 @@ import json
 import jwt
 from datetime import datetime, timedelta
 
+import requests
 from django.http import JsonResponse
 from django.views import View
 from django.contrib.auth import get_user_model
 from django.conf import settings
 from django.core.mail import send_mail
-from django.http import HttpRequest
 from django.urls.base import reverse
-from django.shortcuts import render
+from django.shortcuts import render, redirect
 from django.utils.translation import gettext as _
 from django.core.exceptions import PermissionDenied
+from django.conf import settings
+from django.template import loader
+from django.http import HttpResponse
 
 from api.utils.errors import error_response, not_valid_response, unauthorized_response
-from .models import APIUser
-from .forms import NewPasswordForm, SignUpForm, LoginForm, ChangePasswordForm
+from api.utils.urls import get_absolute_url
+from .models import APIUser, TokenTypes
+from .forms import SignUpForm, LoginForm, ChangePasswordForm, SendResetPasswordEmailForm, ResetPasswordForm
 from .serializers import serialize_auth
 from .emails import send_registration_email
 
@@ -85,36 +89,28 @@ class ChangePasswordView(AuthenticatedView):
 
 
 class SendResetPasswordEmailView(View):
-    def post(self, request: HttpRequest):
-        data = json.loads(request.body)
-        email = data.get('email', '').lower()
+    def post(self, request):
+        data = json.loads(request.body or '{}')
+        form = SendResetPasswordEmailForm(data)
 
-        if not email:
-            return error_response('auth', _('Please enter email'))
+        if not form.is_valid():
+            return not_valid_response(form.errors)
+
+        email = form.cleaned_data['email']
 
         try:
-            already_exists = APIUser.objects.get(email=email)
+            user = APIUser.objects.get(email=email)
+            token = user.get_reset_password_token()
+            reset_password_path = reverse('reset_password_form') + f'?token={token}'
+            url = get_absolute_url(request, reset_password_path)
 
-            if already_exists:
-                user = APIUser.objects.get(email=email)
-                token = jwt.encode({
-                    'email': user.email,
-                    'created_at': datetime.now().timestamp(),
-                }, settings.JWT_SECRET, algorithm='HS256').decode('utf-8')
-                link = '{}://{}{}'.format(
-                    request.scheme,
-                    request.get_host(),
-                    reverse('reset_pass_form') + "?token={}".format(token))
-
-                send_mail(
-                    'Reset password',
-                    f'Link: {link}',
-                    None,
-                    [email],
-                )
-            else:
-                return error_response('auth', _('Not found user with this email'))
-        except:
+            send_mail(
+                'Reset password',
+                f'Rest password URL: {url}',
+                None,
+                [email],
+            )
+        except APIUser.DoesNotExist:
             pass
 
         return JsonResponse({
@@ -122,34 +118,59 @@ class SendResetPasswordEmailView(View):
         }, status=200)
 
 
-class ResetPassFormView(View):
-    def get(self, request: HttpRequest):
-        password_form = NewPasswordForm()
-        return render(request, 'auth/passform.html', context={'form': password_form})
+class ResetPasswordView(View):
+    def post(self, request):
+        data = json.loads(request.body or '{}')
+        form = ResetPasswordForm(data)
 
-    def post(self, request: HttpRequest):
-        token = request.GET.get('token', None)
-        password_form = NewPasswordForm(request.POST)
+        if not form.is_valid():
+            return not_valid_response(form.errors)
 
-        if password_form.is_valid():
-            try:
-                data = request.POST.dict()
-                new_password = data['password']
+        token = form.cleaned_data['token']
+        password = form.cleaned_data['password']
 
-                if data['password'] != data['password_confirm']:
-                    return error_response('auth', _('Passwords do not match'))
+        try:
+            payload = jwt.decode(token, settings.JWT_SECRET, algorithms=['HS256'])
+            if payload['type'] != TokenTypes.reset_password.name:
+                raise Exception
 
-                payload = jwt.decode(token, settings.JWT_SECRET, algorithms=['HS256'])
-                created_at = datetime.fromtimestamp(payload['created_at'])
-                created_from_now = datetime.now() - created_at
+            token_life_time = datetime.now() - datetime.fromisoformat(payload['datetime'])
+            if token_life_time > timedelta(hours=24):
+                raise Exception
 
-                if created_from_now > timedelta(hours=24):
-                    return error_response('auth', _('Time has expired'))
-            except:
-                return error_response('auth', _('Token is incorrect'))
+            user = APIUser.objects.get(id=payload['id'])
+            user.password = APIUser.make_password(password)
+            user.save()
+        except:
+            return error_response('auth', 'Password reset link is incorrect or outdated.')
 
-        user = get_user_model().objects.get(email=payload['email'])
-        user.set_password(new_password)
-        user.save()
+        return JsonResponse({
+            'success': True
+        }, status=200)
 
-        return render(request, template_name='auth/done_pass.html')
+
+class ResetPasswordFormHTMLView(View):
+    def get(self, request):
+        return render(request, 'reset_password_form.html')
+
+    def post(self, request):
+        data = dict(
+            token=request.GET.get('token'),
+            password=request.POST.get('password'),
+        )
+
+        headers = {'content-type': 'application/json', 'secret': settings.AUTH_SECRET}
+        response = requests.post(url=get_absolute_url(request, reverse('reset_password')), json=data, headers=headers)
+
+        if response.ok:
+            return redirect(reverse('reset_password_success'))
+
+        response_body = json.loads(response.text)
+        context = dict(error=response_body['errors'][0]['message'])
+        template = loader.get_template('reset_password_form.html')
+        return HttpResponse(template.render(context, request))
+
+
+class ResetPasswordSuccessHTMLView(View):
+    def get(self, request):
+        return render(request, 'reset_password_success.html')

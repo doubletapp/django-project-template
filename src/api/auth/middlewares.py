@@ -2,6 +2,7 @@ import jwt
 from django.conf import settings
 from api.auth.models import APIUser
 from api.utils.errors import unauthorized_response
+from api.auth.models import TokenTypes
 
 
 def is_api_call(request):
@@ -19,7 +20,11 @@ class JWTAuthenticationMiddleware(object):
                 if not 'Bearer ' in authorization:
                     raise Exception
                 authorization = authorization.replace('Bearer ', '')
+
                 payload = jwt.decode(authorization, settings.JWT_SECRET, algorithms=['HS256'])
+                if payload['type'] != TokenTypes.authorization.name:
+                    raise Exception
+
                 user = APIUser.objects.get(id=payload['id'])
                 request.user = user
             except:
