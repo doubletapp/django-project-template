@@ -68,14 +68,6 @@ class ChangePasswordView(AuthenticatedView):
     @validate_form(ChangePasswordForm)
     def post(self, request, form_data):
         user = request.user
-        print('1', request)
-        # data = json.loads(request.body or '{}')
-        # form = ChangePasswordForm(data, request=request)
-
-        # if not form.is_valid():
-        #     return not_valid_response(form.errors)
-
-        # new_password = form.cleaned_data['new_password']
         new_password = form_data['new_password']
         user.password = user.make_password(new_password)
         user.save()
@@ -116,21 +108,12 @@ class ResetPasswordView(View):
 
     @validate_form(ResetPasswordForm)
     def post(self, request, form_data):
-        # data = json.loads(request.body or '{}')
-        # form = ResetPasswordForm(data)
-
-        # if not form.is_valid():
-        #     return not_valid_response(form.errors)
-
-        # token = form.cleaned_data['token']
-        # password = form.cleaned_data['password']
-
         token = form_data['token']
         password = form_data['password']
 
         try:
             payload = jwt.decode(token, settings.JWT_SECRET, algorithms=['HS256'])
-            if payload['type'] != TokenTypes.reset_password.name:                              # doesn't work here
+            if payload['type'] != TokenTypes.reset_password.name:
                 raise Exception("types")
 
             token_life_time = datetime.now() - datetime.fromisoformat(payload['datetime'])
