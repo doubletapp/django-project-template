@@ -1,6 +1,7 @@
 import sys, traceback
 from django.http import JsonResponse
 
+
 def error_response(code, message, status=400):
     return JsonResponse({
         'errors': [{

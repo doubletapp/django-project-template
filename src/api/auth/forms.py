@@ -2,9 +2,10 @@ from django import forms
 from django.utils.translation import gettext as _
 
 from .models import APIUser
+from api.forms import BaseForm
 
 
-class SignUpForm(forms.Form):
+class SignUpForm(BaseForm):    
     email = forms.EmailField()
     password = forms.CharField()
 
@@ -23,7 +24,7 @@ class SignUpForm(forms.Form):
         return password
 
 
-class LoginForm(forms.Form):
+class LoginForm(BaseForm):
     email = forms.EmailField()
     password = forms.CharField()
 
@@ -38,11 +39,7 @@ class LoginForm(forms.Form):
         return password
 
 
-class ChangePasswordForm(forms.Form):
-    def __init__(self, *args, **kwargs):
-        self.request = kwargs.pop('request', None)
-        super().__init__(*args, **kwargs)
-
+class ChangePasswordForm(BaseForm):
     old_password = forms.CharField()
     new_password = forms.CharField()
 
@@ -53,7 +50,7 @@ class ChangePasswordForm(forms.Form):
         return old_password
 
 
-class SendResetPasswordEmailForm(forms.Form):
+class SendResetPasswordEmailForm(BaseForm):
     email = forms.EmailField()
 
     def clean_email(self):
@@ -63,6 +60,6 @@ class SendResetPasswordEmailForm(forms.Form):
         return email
 
 
-class ResetPasswordForm(forms.Form):
+class ResetPasswordForm(BaseForm):
     token = forms.CharField()
     password = forms.CharField()
