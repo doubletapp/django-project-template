@@ -34,7 +34,6 @@ class AuthenticatedView(View):
 
 
 class LoginView(View):
-
     @validate_form(LoginForm)
     def post(self, request, form_data):
         email = form_data['email']
@@ -51,7 +50,6 @@ class LoginView(View):
 
 
 class SignupView(View):
-
     @validate_form(SignUpForm)
     def post(self, request, form_data):
         email = form_data['email']
@@ -64,7 +62,6 @@ class SignupView(View):
 
 
 class ChangePasswordView(AuthenticatedView):
-
     @validate_form(ChangePasswordForm)
     def post(self, request, form_data):
         user = request.user
@@ -72,13 +69,10 @@ class ChangePasswordView(AuthenticatedView):
         user.password = user.make_password(new_password)
         user.save()
 
-        return JsonResponse({
-            'success': True
-        }, status=200)
+        return JsonResponse({'success': True}, status=200)
 
 
 class SendResetPasswordEmailView(View):
-
     @validate_form(SendResetPasswordEmailForm)
     def post(self, request, form_data):
         email = form_data['email']
@@ -98,13 +92,10 @@ class SendResetPasswordEmailView(View):
         except APIUser.DoesNotExist:
             pass
 
-        return JsonResponse({
-            'success': True
-        }, status=200)
+        return JsonResponse({'success': True}, status=200)
 
 
 class ResetPasswordView(View):
-
     @validate_form(ResetPasswordForm)
     def post(self, request, form_data):
         token = form_data['token']
@@ -125,9 +116,7 @@ class ResetPasswordView(View):
         except:
             return error_response('auth', 'Password reset link is incorrect or outdated.')
 
-        return JsonResponse({
-            'success': True
-        }, status=200)
+        return JsonResponse({'success': True}, status=200)
 
 
 class ResetPasswordFormHTMLView(View):

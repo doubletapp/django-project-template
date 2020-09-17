@@ -5,9 +5,7 @@ from enum import Enum
 from django.conf import settings
 from django.contrib.auth.models import AbstractUser
 from django.db import models
-from django.contrib.auth.hashers import (
-    make_password, get_hasher
-)
+from django.contrib.auth.hashers import make_password, get_hasher
 from django.contrib.auth.hashers import check_password
 from django.utils.translation import gettext_lazy as _
 
@@ -51,7 +49,7 @@ class APIUser(models.Model):
                 datetime=now,
             ),
             settings.JWT_SECRET,
-            algorithm='HS256'
+            algorithm='HS256',
         ).decode('utf-8')
 
     def get_auth_token(self):

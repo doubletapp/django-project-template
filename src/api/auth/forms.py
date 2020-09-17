@@ -10,8 +10,7 @@ class SignUpForm(Form):
     password = forms.CharField()
 
     def clean_email(self):
-        email = self.cleaned_data['email']
-        email = email.lower().strip()
+        email = self.cleaned_data['email'].lower().strip()
 
         if APIUser.objects.filter(email=email).exists():
             raise forms.ValidationError(_('The user with the provided email already exists.'))
@@ -29,9 +28,7 @@ class LoginForm(Form):
     password = forms.CharField()
 
     def clean_email(self):
-        email = self.cleaned_data['email']
-        email = email.lower().strip()
-        return email
+        return self.cleaned_data['email'].lower().strip()
 
     def clean_password(self):
         password = self.cleaned_data['password']
@@ -54,10 +51,7 @@ class SendResetPasswordEmailForm(Form):
     email = forms.EmailField()
 
     def clean_email(self):
-        email = self.cleaned_data['email']
-        email = email.lower().strip()
-
-        return email
+        return self.cleaned_data['email'].lower().strip()
 
 
 class ResetPasswordForm(Form):

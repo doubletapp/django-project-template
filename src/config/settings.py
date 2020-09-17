@@ -68,9 +68,7 @@ MIDDLEWARE = [
 ]
 
 CORS_ORIGIN_ALLOW_ALL = True
-CORS_ALLOW_HEADERS = default_headers + (
-    'secret',
-)
+CORS_ALLOW_HEADERS = default_headers + ('secret',)
 
 ROOT_URLCONF = 'config.urls'
 
