@@ -5,7 +5,7 @@ from .models import APIUser
 from api.forms import Form
 
 
-class SignUpForm(Form):    
+class SignUpForm(Form):
     email = forms.EmailField()
     password = forms.CharField()
 

@@ -86,8 +86,7 @@ class SendResetPasswordEmailView(View):
         try:
             user = APIUser.objects.get(email=email)
             token = user.get_reset_password_token()
-            reset_password_path = reverse(
-                'reset_password_form') + f'?token={token}'
+            reset_password_path = reverse('reset_password_form') + f'?token={token}'
             url = get_absolute_url(request, reset_password_path)
 
             send_mail(
@@ -114,17 +113,16 @@ class ResetPasswordView(View):
         try:
             payload = jwt.decode(token, settings.JWT_SECRET, algorithms=['HS256'])
             if payload['type'] != TokenTypes.reset_password.name:
-                raise Exception("types")
+                raise Exception()
 
             token_life_time = datetime.now() - datetime.fromisoformat(payload['datetime'])
             if token_life_time > timedelta(hours=24):
-                raise Exception("token life time")
+                raise Exception()
 
             user = APIUser.objects.get(id=payload['id'])
             user.password = APIUser.make_password(password)
             user.save()
-        except Exception as e:
-            print('Error ', e)
+        except:
             return error_response('auth', 'Password reset link is incorrect or outdated.')
 
         return JsonResponse({
@@ -142,10 +140,8 @@ class ResetPasswordFormHTMLView(View):
             password=request.POST.get('password'),
         )
 
-        headers = {'content-type': 'application/json',
-                   'secret': settings.API_SECRET}
-        response = requests.post(url=get_absolute_url(
-            request, reverse('reset_password')), json=data, headers=headers)
+        headers = {'content-type': 'application/json', 'secret': settings.API_SECRET}
+        response = requests.post(url=get_absolute_url(request, reverse('reset_password')), json=data, headers=headers)
 
         if response.ok:
             return redirect(reverse('reset_password_success'))
