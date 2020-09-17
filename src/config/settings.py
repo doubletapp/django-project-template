@@ -19,7 +19,7 @@ from corsheaders.defaults import default_headers
 
 env = environ.Env(
     SECRET_KEY=(str, ''),
-    AUTH_SECRET=(str, ''),
+    API_SECRET=(str, ''),
     JWT_SECRET=(str, ''),
     POSTGRES_HOST=(str, ''),
     POSTGRES_DB=(str, ''),
@@ -29,8 +29,8 @@ env = environ.Env(
     ALLOWED_HOSTS=(str, ''),
 )
 
-SECRET_KEY = env('SECRET_KEY')
-AUTH_SECRET = env('AUTH_SECRET')
+SECRET_KEY = env('DJANGO_SECRET_KEY')
+API_SECRET = env('API_SECRET')
 JWT_SECRET = env('JWT_SECRET')
 
 

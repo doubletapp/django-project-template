@@ -18,6 +18,7 @@ from django.http import HttpResponse
 
 from api.utils.errors import error_response, not_valid_response, unauthorized_response
 from api.utils.urls import get_absolute_url
+from api.utils.decorators import validate_form
 from .models import APIUser, TokenTypes
 from .forms import SignUpForm, LoginForm, ChangePasswordForm, SendResetPasswordEmailForm, ResetPasswordForm
 from .serializers import serialize_auth
@@ -33,15 +34,11 @@ class AuthenticatedView(View):
 
 
 class LoginView(View):
-    def post(self, request):
-        data = json.loads(request.body or '{}')
-        form = LoginForm(data)
 
-        if not form.is_valid():
-            return not_valid_response(form.errors)
-
-        email = form.cleaned_data['email']
-        password = form.cleaned_data['password']
+    @validate_form(LoginForm)
+    def post(self, request, form_data):
+        email = form_data['email']
+        password = form_data['password']
 
         try:
             user = APIUser.objects.get(email=email)
@@ -54,15 +51,11 @@ class LoginView(View):
 
 
 class SignupView(View):
-    def post(self, request):
-        data = json.loads(request.body or '{}')
-        form = SignUpForm(data)
 
-        if not form.is_valid():
-            return not_valid_response(form.errors)
-
-        email = form.cleaned_data['email']
-        password = form.cleaned_data['password']
+    @validate_form(SignUpForm)
+    def post(self, request, form_data):
+        email = form_data['email']
+        password = form_data['password']
 
         user = APIUser.create_user(email, password)
         send_registration_email(user)
@@ -71,15 +64,11 @@ class SignupView(View):
 
 
 class ChangePasswordView(AuthenticatedView):
-    def post(self, request):
+
+    @validate_form(ChangePasswordForm)
+    def post(self, request, form_data):
         user = request.user
-        data = json.loads(request.body or '{}')
-        form = ChangePasswordForm(data, request=request)
-
-        if not form.is_valid():
-            return not_valid_response(form.errors)
-
-        new_password = form.cleaned_data['new_password']
+        new_password = form_data['new_password']
         user.password = user.make_password(new_password)
         user.save()
 
@@ -89,14 +78,10 @@ class ChangePasswordView(AuthenticatedView):
 
 
 class SendResetPasswordEmailView(View):
-    def post(self, request):
-        data = json.loads(request.body or '{}')
-        form = SendResetPasswordEmailForm(data)
 
-        if not form.is_valid():
-            return not_valid_response(form.errors)
-
-        email = form.cleaned_data['email']
+    @validate_form(SendResetPasswordEmailForm)
+    def post(self, request, form_data):
+        email = form_data['email']
 
         try:
             user = APIUser.objects.get(email=email)
@@ -119,24 +104,20 @@ class SendResetPasswordEmailView(View):
 
 
 class ResetPasswordView(View):
-    def post(self, request):
-        data = json.loads(request.body or '{}')
-        form = ResetPasswordForm(data)
 
-        if not form.is_valid():
-            return not_valid_response(form.errors)
-
-        token = form.cleaned_data['token']
-        password = form.cleaned_data['password']
+    @validate_form(ResetPasswordForm)
+    def post(self, request, form_data):
+        token = form_data['token']
+        password = form_data['password']
 
         try:
             payload = jwt.decode(token, settings.JWT_SECRET, algorithms=['HS256'])
             if payload['type'] != TokenTypes.reset_password.name:
-                raise Exception
+                raise Exception()
 
             token_life_time = datetime.now() - datetime.fromisoformat(payload['datetime'])
             if token_life_time > timedelta(hours=24):
-                raise Exception
+                raise Exception()
 
             user = APIUser.objects.get(id=payload['id'])
             user.password = APIUser.make_password(password)
@@ -159,7 +140,7 @@ class ResetPasswordFormHTMLView(View):
             password=request.POST.get('password'),
         )
 
-        headers = {'content-type': 'application/json', 'secret': settings.AUTH_SECRET}
+        headers = {'content-type': 'application/json', 'secret': settings.API_SECRET}
         response = requests.post(url=get_absolute_url(request, reverse('reset_password')), json=data, headers=headers)
 
         if response.ok:

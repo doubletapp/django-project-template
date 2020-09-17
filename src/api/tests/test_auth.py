@@ -11,7 +11,7 @@ from django.conf import settings
 from ..auth.models import APIUser
 
 client = Client()
-HEADER = {'HTTP_SECRET': settings.AUTH_SECRET}
+HEADER = {'HTTP_SECRET': settings.API_SECRET}
 
 
 class EmailSignUpTest(TestCase):
