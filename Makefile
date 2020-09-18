@@ -32,7 +32,8 @@ dev:
 	docker-compose run --volume=${PWD}/src:/app/src --publish=8000:8000 app python manage.py runserver 0.0.0.0:8000
 
 swagger_build:
-	python ./swagger/compile.py
+	docker-compose run --volume=${PWD}/swagger:/app/swagger app python /app/swagger/compile.py
+	sudo chown -R ${USER} swagger/build/
 
 swagger_dev:
 	docker-compose run --volume=${PWD}/swagger/build:/swagger --publish=8080:8080 swagger
