@@ -1,4 +1,4 @@
-version: '3'
+version: "3"
 
 services:
   db:
@@ -16,8 +16,7 @@ services:
         hard: 4096
     build: .
     restart: always
-    env_file:
-      .env
+    env_file: .env
     volumes:
       - static_volume:/app/src/static/
     depends_on:
@@ -40,7 +39,9 @@ services:
   swagger:
     container_name: "${SWAGGER_CONTAINER_NAME}"
     build: ./swagger
-    restart: always
+    environment:
+      - BASE_URL=/swagger
+      - SWAGGER_JSON=/swagger/swagger.json
 
 volumes:
   db_volume:

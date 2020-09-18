@@ -87,3 +87,10 @@ open `sudo nano /etc/gitlab-runner/config.toml`
 change `volumes = ["/cache"]` to `volumes = ["/var/run/docker.sock:/var/run/docker.sock", "/cache"]`
 4. Run: `sudo gitlab-runner run`
 
+
+# Swagger
+1. Edit `swagger/api-doc.yml`
+2. Build swagger with `make swagger_build`
+3. Run swagger locally with `make swagger_dev`
+4. Or `make swagger_build swagger_dev` after making changes to rebuild and start
+5. Open http://127.0.0.1:8080/swagger/

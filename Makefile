@@ -31,4 +31,10 @@ lint:
 dev:
 	docker-compose run --volume=${PWD}/src:/app/src --publish=8000:8000 app python manage.py runserver 0.0.0.0:8000
 
-.PHONY: all build up down migrate test lint createsuperuser collectstatic makemigrations dev
+swagger_build:
+	python ./swagger/compile.py
+
+swagger_dev:
+	docker-compose run --volume=${PWD}/swagger/build:/swagger --publish=8080:8080 swagger
+
+.PHONY: all build up down migrate test lint createsuperuser collectstatic makemigrations dev swagger_build swagger_dev

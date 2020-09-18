@@ -1,0 +1,41 @@
+title: project_name API
+handlers:
+  authentication:
+    POST /api/auth/login:
+      headers: [SECRET!]
+      request:
+        email!: string
+        password!: string
+      response: $authResponse
+    POST /api/auth/signup:
+      headers: [SECRET!]
+      request:
+        email!: string
+        password!: string
+      response: $authResponse
+    POST /api/auth/change_password:
+      headers: [SECRET!, AUTHORIZATION!]
+      request:
+        old_password!: string
+        new_password!: string
+      response: $successResponse
+    POST /api/auth/send_reset_password_email:
+      headers: [SECRET!]
+      request:
+        email!: string
+      response: $successResponse
+    POST /api/auth/reset_password:
+      headers: [SECRET!]
+      request:
+        token!: string
+        new_password!: string
+      response: $successResponse
+models:
+  successResponse:
+    success: boolean
+  userResponse:
+    id: integer
+    email: string
+  authResponse:
+    token: string
+    user: $userResponse
