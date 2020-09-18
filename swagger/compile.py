@@ -124,6 +124,9 @@ def parse_model(input_model, is_nullable=False):
             result.update(models[result_string])
             return result
 
+        if is_nullable:
+            result['nullable'] = True
+
         result['type'] = result_string
         return result
 
