@@ -11,7 +11,7 @@ RUN apt-get -y install libgdal-dev
 COPY Pipfile* /app/
 RUN cd /app/ && \
     pip install pipenv && \
-    pipenv lock --requirements > requirements.txt && \
+    pipenv lock --requirements --keep-outdated > requirements.txt && \
     pip install --disable-pip-version-check --no-cache-dir -r requirements.txt
 
 COPY src /app/src/
