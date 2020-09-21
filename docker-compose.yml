@@ -7,6 +7,8 @@ services:
     restart: always
     volumes:
       - db_volume:/var/lib/postgresql/data/
+    logging:
+      driver: journald
 
   app:
     container_name: "${APP_CONTAINER_NAME}"
@@ -19,6 +21,8 @@ services:
     env_file: .env
     volumes:
       - static_volume:/app/src/static/
+    logging:
+      driver: journald
     depends_on:
       - db
 
@@ -33,6 +37,8 @@ services:
     depends_on:
       - app
       - swagger
+    logging:
+      driver: journald
     volumes:
       - static_volume:/app/src/static/
 

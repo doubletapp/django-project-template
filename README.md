@@ -15,6 +15,10 @@ https://docs.docker.com/install/linux/docker-ce/ubuntu/
 ## Install docker-compose
 https://docs.docker.com/compose/install/
 
+## Logs
+```
+journalctl CONTAINER_NAME=name
+```
 
 # Nginx
 ---
