@@ -180,6 +180,11 @@ if __name__ == "__main__":
                 for query_name, query_type in handler_data.get('query', {}).items():
                     parameters.append(parse_query(query_name, query_type))
 
+                # description
+                description = handler_data.get('description', None)
+                if description:
+                    output_path[method]['description'] = description
+
                 # request
                 request = handler_data.get('request', None)
                 if request:
