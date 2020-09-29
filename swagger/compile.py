@@ -127,6 +127,11 @@ def parse_model(input_model, is_nullable=False):
         if is_nullable:
             result['nullable'] = True
 
+        if result_string == 'file':
+            result['type'] = 'string'
+            result['format'] = 'binary'
+            return result
+
         result['type'] = result_string
         return result
 
@@ -187,6 +192,18 @@ if __name__ == "__main__":
                             },
                         },
                     }
+                else:
+                    multipartRequest = handler_data.get('multipartRequest', None)
+                    if multipartRequest:
+                        schema = parse_model(multipartRequest)
+                        output_path[method]['requestBody'] = {
+                            'required': True,
+                            'content': {
+                                'multipart/form-data': {
+                                    'schema': schema,
+                                },
+                            },
+                        }
 
                 # response
                 schema = parse_model(handler_data['response'])
