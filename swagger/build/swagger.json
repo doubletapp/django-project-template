@@ -13,11 +13,11 @@
         "parameters": [
           {
             "in": "header",
+            "name": "SECRET",
             "schema": {
               "type": "string"
             },
-            "required": true,
-            "name": "SECRET"
+            "required": true
           }
         ],
         "requestBody": {
@@ -80,11 +80,11 @@
         "parameters": [
           {
             "in": "header",
+            "name": "SECRET",
             "schema": {
               "type": "string"
             },
-            "required": true,
-            "name": "SECRET"
+            "required": true
           }
         ],
         "requestBody": {
@@ -147,19 +147,19 @@
         "parameters": [
           {
             "in": "header",
+            "name": "SECRET",
             "schema": {
               "type": "string"
             },
-            "required": true,
-            "name": "SECRET"
+            "required": true
           },
           {
             "in": "header",
+            "name": "AUTHORIZATION",
             "schema": {
               "type": "string"
             },
-            "required": true,
-            "name": "AUTHORIZATION"
+            "required": true
           }
         ],
         "requestBody": {
@@ -211,11 +211,11 @@
         "parameters": [
           {
             "in": "header",
+            "name": "SECRET",
             "schema": {
               "type": "string"
             },
-            "required": true,
-            "name": "SECRET"
+            "required": true
           }
         ],
         "requestBody": {
@@ -263,11 +263,11 @@
         "parameters": [
           {
             "in": "header",
+            "name": "SECRET",
             "schema": {
               "type": "string"
             },
-            "required": true,
-            "name": "SECRET"
+            "required": true
           }
         ],
         "requestBody": {

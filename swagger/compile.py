@@ -1,226 +1,249 @@
 import json
 import re
 import os
+from enum import Enum
 from collections import defaultdict
 
 import yaml
 
 
-models = dict()
+models = {}
 
 
-def parse_array(value, is_nullable=False):
-    items = parse_model(value)
-
-    result = {
-        'type': 'array',
-        'items': items,
-    }
-
-    if is_nullable:
-        result['nullable'] = True
-
-    return result
+class SwaggerEncoder(json.JSONEncoder):
+    def default(self, obj):
+        if 'serialize' in dir(obj):
+            return obj.serialize()
+        return json.JSONEncoder.default(self, obj)
 
 
-def parse_header(header_name):
-    result_name = header_name
-    result = {
-        'in': 'header',
-        'schema': {'type': 'string'},
-    }
+class SwaggerModel(object):
+    def __init__(self, model_name, model_data):
+        self.name = model_name
+        self.type = None
+        self.enum = None
+        self.format = None
+        self.properties = {}
 
-    # required
-    if result_name.endswith('!'):
-        result['required'] = True
-        result_name = result_name[:-1]
+        self.name, self.is_required = Swagger.check_sign(self.name, Swagger.REQUIRED_SIGN)
+        self.name, self.is_nullable = Swagger.check_sign(self.name, Swagger.NULLABLE_SIGN)
+        self.name, self.is_array = Swagger.check_sign(self.name, Swagger.ARRAY_SIGN)
 
-    result['name'] = result_name
+        if type(model_data) is dict:
+            self.type = 'object'
+            for key, value in model_data.items():
+                model = SwaggerModel(key, value)
+                self.properties[model.name] = model
+            return
 
-    return result
+        if type(model_data) is str:
+            link_name, is_link = Swagger.check_sign(model_data, Swagger.LINK_SIGN, True)
+            if is_link:
+                if not link_name in models:
+                    exit(f'Model ${link_name} does not exist yet. Maybe you messed up the order.')
 
+                self.type = models[link_name].type
+                self.properties = models[link_name].properties
+                return
 
-def parse_path(name):
-    return {
-        'in': 'path',
-        'name': name,
-        'schema': {'type': 'string'},
-        'required': True,
-    }
+            self.enum, model_data = Swagger.check_enum(model_data)
 
+            if model_data == 'file':
+                model_data = 'string'
+                self.format = 'binary'
 
-def parse_query(query_name, query_type):
-    result_type = query_type
-    result = {
-        'in': 'query',
-        'name': query_name,
-        'schema': {},
-    }
+            self.type = model_data
+            return
 
-    # required
-    if result_type.endswith('!'):
-        result['required'] = True
-        result_type = result_type[:-1]
+        exit(f'Data type {type(model_data)} of "{self.name}: {model_data}" is incorrect. Allowed types: {dict}, {str}.')
 
-    result['schema']['type'] = result_type
-
-    return result
-
-
-def parse_model(input_model, is_nullable=False):
-    if type(input_model) is dict:
-        required = []
-        properties = dict()
-
-        for key, value in input_model.items():
-            result_key = key
-
-            is_required_key = False
-            if result_key.endswith('!'):
-                is_required_key = True
-                result_key = result_key[:-1]
-
-            is_nullable_key = False
-            if result_key.endswith('?'):
-                is_nullable_key = True
-                result_key = result_key[:-1]
-
-            if result_key.endswith('[]'):
-                # array
-                result_key = result_key[:-2]
-                properties[result_key] = parse_array(value, is_nullable_key)
-            else:
-                value = parse_model(value, is_nullable_key)
-                properties[result_key] = value
-                if is_required_key:
-                    required.append(result_key)
-
-        result = {
-            'type': 'object',
-            'properties': properties,
+    def serialize(self):
+        data = {
+            'type': self.type,
         }
 
-        if required:
-            result['required'] = required
+        if self.type == 'object':
+            data['properties'] = dict([(model.name, model) for model in self.properties.values()])
+            required_list = [model.name for model in self.properties.values() if model.is_required]
+            if required_list:
+                data['required'] = required_list
 
-        if is_nullable:
-            result['nullable'] = True
+        if self.is_nullable:
+            data['nullable'] = True
 
-        return result
+        if self.enum:
+            data['enum'] = self.enum
 
-    if type(input_model) is str:
-        result_string = input_model
-        result = dict()
-        # enum
-        enum_match = re.search(r'\[.*\]', result_string)
+        if self.format:
+            data['format'] = self.format
+
+        if self.is_array:
+            data = {
+                'type': 'array',
+                'itmes': data,
+            }
+
+        return data
+
+    def __repr__(self):
+        return json.dumps(self, cls=SwaggerEncoder)
+
+
+class SwaggerParameter(object):
+    def __init__(self, source, name, type, is_reuired, enum=None):
+        self.source = source
+        self.type = type
+        self.name = name
+        self.is_reuired = is_reuired
+        self.enum = enum
+
+    def serialize(self):
+        data = {
+            'in': self.source,
+            'name': self.name,
+            'schema': {
+                'type': self.type,
+            },
+            'required': self.is_reuired,
+        }
+
+        if self.enum:
+            data['schema']['enum'] = self.enum
+        return data
+
+    def __repr__(self):
+        return json.dumps(self, cls=SwaggerEncoder)
+
+
+class SwaggerHandler(object):
+    def __init__(self, section_name, handler_method, handler_path, handler_data):
+        self.section = section_name
+        self.method = handler_method
+        self.path = handler_path
+        self.request = SwaggerModel('schema', handler_data['request']) if 'request' in handler_data else None
+        self.multipartRequest = SwaggerModel('schema', handler_data['multipartRequest']) if 'multipartRequest' in handler_data else None
+        self.response = SwaggerModel('schema', handler_data['response'])
+        self.parameters = []
+        self.deprecated = handler_data.get('deprecated', False)
+
+        for match in re.findall(r'{(.*)}', handler_path):
+            self.parameters.append(SwaggerParameter('path', match, 'string', True))
+
+        headers = handler_data.get('headers', [])
+        for header in headers:
+            header, is_required = Swagger.check_sign(header, Swagger.REQUIRED_SIGN)
+            self.parameters.append(SwaggerParameter('header', header, 'string', is_required))
+
+        query_parameters = handler_data.get('query', {})
+        for (query_name, query_value) in query_parameters.items():
+            enum, query_value = Swagger.check_enum(query_value)
+            query_name, is_required = Swagger.check_sign(query_name, Swagger.REQUIRED_SIGN)
+            self.parameters.append(SwaggerParameter('query', query_name, query_value, is_required, enum))
+
+    def __repr__(self):
+        return json.dumps(self, cls=SwaggerEncoder)
+
+    def serialize(self):
+        data = {
+            'tags': [self.section],
+        }
+
+        if self.deprecated:
+            data['deprecated'] = True
+
+        if self.parameters:
+            data['parameters'] = self.parameters
+
+        if self.request:
+            data['requestBody'] = {
+                'required': True,
+                'content': {
+                    'application/json': {
+                        'schema': self.request,
+                    },
+                },
+            }
+        elif self.multipartRequest:
+            data['requestBody'] = {
+                'required': True,
+                'content': {
+                    'multipart/form-data': {
+                        'schema': self.multipartRequest,
+                    },
+                },
+            }
+
+        data['responses'] = {
+            '200': {
+                'description': 'success',
+                'content': {
+                    'application/json': {
+                        'schema': self.response,
+                    },
+                },
+            },
+        }
+
+        return data
+
+
+class Swagger(object):
+    REQUIRED_SIGN = '!'
+    NULLABLE_SIGN = '?'
+    ARRAY_SIGN = '[]'
+    LINK_SIGN = '$'
+
+    @staticmethod
+    def check_sign(value, sign, starts_with_sign=False):
+        if starts_with_sign:
+            return (value[1:], True) if value[0] == sign else (value, False)
+        return (value[: -len(sign)], True) if value[-len(sign)] == sign else (value, False)
+
+    @staticmethod
+    def check_enum(value):
+        enum_match = re.search(r'\[.*\]', value)
         if enum_match:
             enum_string = enum_match.group(0)
-            result['enum'] = yaml.load(enum_string, Loader=yaml.Loader)
-            result_string = result_string.replace(enum_string, '')
+            enum_data = yaml.load(enum_string, Loader=yaml.Loader)
+            return enum_data, value.replace(enum_string, '')
+        return None, value
 
-        # response modelreference
-        if result_string.startswith('$'):
-            result_string = result_string[1:]
-            result.update(models[result_string])
-            return result
+    def __init__(self):
+        self.paths = defaultdict(dict)
 
-        if is_nullable:
-            result['nullable'] = True
+    def read(self, input_stream):
+        data = yaml.load(input_stream, Loader=yaml.FullLoader)
 
-        if result_string == 'file':
-            result['type'] = 'string'
-            result['format'] = 'binary'
-            return result
+        self.title = data['title']
 
-        result['type'] = result_string
-        return result
+        for (model_name, model_data) in data['models'].items():
+            model = SwaggerModel(model_name, model_data)
+            models[model.name] = model
+
+        for (section_name, section_data) in data['handlers'].items():
+            for (handler_name, handler_data) in section_data.items():
+                handler_method, handler_path = handler_name.split(' ')
+                handler_method = handler_method.lower()
+                self.paths[handler_path][handler_method] = SwaggerHandler(section_name, handler_method, handler_path, handler_data)
+
+        return self
+
+    def write(self, output_stream):
+        data = {
+            'openapi': '3.0.0',
+            'info': {
+                'version': 'REST',
+                'title': self.title,
+            },
+            'paths': self.paths,
+        }
+
+        output_stream.write(json.dumps(data, cls=SwaggerEncoder, indent=2))
+        return self
 
 
 if __name__ == "__main__":
     dir_path = os.path.dirname(os.path.realpath(__file__))
 
     with open(f'{dir_path}/api-doc.yml', 'r') as input_stream, open(f'{dir_path}/build/swagger.json', 'w') as output_stream:
-        input_data = yaml.load(input_stream, Loader=yaml.FullLoader)
-        output_data = {
-            'openapi': '3.0.0',
-            'info': {
-                'version': 'REST',
-                'title': input_data['title'],
-            },
-            'paths': defaultdict(dict),
-        }
-
-        for model_name, model_data in input_data['models'].items():
-            models[model_name] = parse_model(model_data)
-
-        for category_name, category_data in input_data['handlers'].items():
-            for handler_name, handler_data in category_data.items():
-                method, path = handler_name.split()
-                method = method.lower()
-                output_path = output_data['paths'][path]
-                output_path[method] = defaultdict(dict)
-                output_path[method]['tags'] = [category_name]
-
-                if handler_data.get('deprecated'):
-                    output_path[method]['deprecated'] = True
-
-                # parameters
-                output_path[method]['parameters'] = []
-                parameters = output_path[method]['parameters']
-
-                ## headers
-                for header in handler_data.get('headers', []):
-                    parameters.append(parse_header(header))
-
-                ## path
-                for match in re.findall(r'{(.*)}', handler_name):
-                    parameters.append(parse_path(match))
-
-                ## query
-                for query_name, query_type in handler_data.get('query', {}).items():
-                    parameters.append(parse_query(query_name, query_type))
-
-                # description
-                description = handler_data.get('description', None)
-                if description:
-                    output_path[method]['description'] = description
-
-                # request
-                request = handler_data.get('request', None)
-                if request:
-                    schema = parse_model(request)
-                    output_path[method]['requestBody'] = {
-                        'required': True,
-                        'content': {
-                            'application/json': {
-                                'schema': schema,
-                            },
-                        },
-                    }
-                else:
-                    multipartRequest = handler_data.get('multipartRequest', None)
-                    if multipartRequest:
-                        schema = parse_model(multipartRequest)
-                        output_path[method]['requestBody'] = {
-                            'required': True,
-                            'content': {
-                                'multipart/form-data': {
-                                    'schema': schema,
-                                },
-                            },
-                        }
-
-                # response
-                schema = parse_model(handler_data['response'])
-                output_path[method]['responses'] = {
-                    '200': {
-                        'description': 'success',
-                        'content': {
-                            'application/json': {
-                                'schema': schema,
-                            },
-                        },
-                    },
-                }
-
-        output_stream.write(json.dumps(output_data, indent=2))
+        Swagger().read(input_stream).write(output_stream)
