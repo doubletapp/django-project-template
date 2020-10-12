@@ -125,6 +125,7 @@ class SwaggerHandler(object):
         self.response = SwaggerModel('schema', handler_data['response'])
         self.parameters = []
         self.deprecated = handler_data.get('deprecated', False)
+        self.description = handler_data.get('description', None)
 
         for match in re.findall(r'{(.*)}', handler_path):
             self.parameters.append(SwaggerParameter('path', match, 'string', True))
@@ -147,6 +148,9 @@ class SwaggerHandler(object):
         data = {
             'tags': [self.section],
         }
+
+        if self.description:
+            data['description'] = self.description
 
         if self.deprecated:
             data['deprecated'] = True
