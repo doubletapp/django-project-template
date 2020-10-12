@@ -1,6 +1,7 @@
 import sys, traceback
 from django.http import JsonResponse
 
+
 def error_response(code, message, status=400):
     return JsonResponse({
         'errors': [{
@@ -8,6 +9,20 @@ def error_response(code, message, status=400):
             'message': message,
         }]
     }, status=status)
+
+
+def not_valid_response(errors, status=422):
+    return JsonResponse({
+        'errors': [{
+            'code': 'validation_failed',
+            'message': 'Validation failed',
+            'fields': errors
+        }]
+    }, status=status)
+
+
+def unauthorized_response():
+    return error_response('unauthorized', 'The request has not been applied because it lacks valid authentication credentials for the target resource.', status=401)
 
 
 def print_traceback():

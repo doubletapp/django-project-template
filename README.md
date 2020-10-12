@@ -15,6 +15,10 @@ https://docs.docker.com/install/linux/docker-ce/ubuntu/
 ## Install docker-compose
 https://docs.docker.com/compose/install/
 
+## Logs
+```
+sudo journalctl CONTAINER_NAME=container_name
+```
 
 # Nginx
 ---
@@ -61,30 +65,36 @@ server {
 
 # GitLab CI
 ---
-## Envitonment
+## Environment
 1. Open `Operations/Environments` in GitLab project and create New Environment (example: test and prod)
 2.  Open `Settings/CI|CD/Variables` and create all required variables from .env.example (be careful with \n)
 3. Open `Settings/Repository/Deploy-Tokens` and create token for CI (input `DEPLOY_TOKEN_LOGIN: login` and `DEPLOY_TOKEN_PSSWD: password` for this token in `CI|CD/Variables`)
-4. Open `env/{env}/docker-compose.yml` in folder project and input necessary variable `app/environment`
-5. Create branch `testing`
-6. Create testing file in bucket (example: `autotest/{env}`)
-7.  Disable Shared Runners in `Settings/CI|CD/Runners`
+4. Create branch `testing`
+5. Create testing file in bucket (example: `autotest/{env}`)
+6.  Disable Shared Runners in `Settings/CI|CD/Runners`
 
 
 ## Runner
-1. Install (in host machine) gitlab-runnet  
-https://docs.gitlab.com/runner/install/linux-repository.html 
-2. Register runner     
-https://docs.gitlab.com/runner/register/  
-**Сonfiguration:**  
-`GitLab instance:` https://gitlab.com  
-`Token runner:` check from Setting/CI|CD/Runner/Specific-Runners  
-`Description:` runner-project-name  
-`Tags:` nothing  
-`Runner executor:` docker  
-`Docker image:` docker/compose:latest  
-3. Fix error x509  
-open `sudo nano /etc/gitlab-runner/config.toml`  
-change `volumes = ["/cache"]` to `volumes = ["/var/run/docker.sock:/var/run/docker.sock", "/cache"]`  
-4. Run: `sudo gitlab-runner run`  
+1. Install (in host machine) gitlab-runnet
+https://docs.gitlab.com/runner/install/linux-repository.html
+2. Register runner
+https://docs.gitlab.com/runner/register/
+**Сonfiguration:**
+`GitLab instance:` https://gitlab.com
+`Token runner:` check from Setting/CI|CD/Runner/Specific-Runners
+`Description:` runner-project-name
+`Tags:` nothing
+`Runner executor:` docker
+`Docker image:` docker/compose:latest
+3. Fix error x509
+open `sudo nano /etc/gitlab-runner/config.toml`
+change `volumes = ["/cache"]` to `volumes = ["/var/run/docker.sock:/var/run/docker.sock", "/cache"]`
+4. Run: `sudo gitlab-runner run`
 
+
+# Swagger
+1. Edit `swagger/api-doc.yml`
+2. Build swagger with `make swagger_build`
+3. Run swagger locally with `make swagger_dev`
+4. Or `make swagger_build swagger_dev` after making changes to rebuild and start
+5. Open http://127.0.0.1:8080/swagger/

@@ -1,4 +1,4 @@
-version: '3'
+version: "3"
 
 services:
   db:
@@ -7,6 +7,8 @@ services:
     restart: always
     volumes:
       - db_volume:/var/lib/postgresql/data/
+    logging:
+      driver: journald
 
   app:
     container_name: "${APP_CONTAINER_NAME}"
@@ -14,33 +16,19 @@ services:
       nofile:
         soft: 4096
         hard: 4096
-    build: ../..
+    build: .
     restart: always
-    environment:
-      - POSTGRES_HOST
-      - POSTGRES_DB
-      - POSTGRES_USER
-      - POSTGRES_PASSWORD
-      - AWS_STORAGE_BUCKET_NAME
-      - AWS_ACCESS_KEY_ID
-      - AWS_SECRET_ACCESS_KEY
-      - AWS_LOCATION
-      - ENVIRONMENT
-      - DEBUG
-      - ALLOWED_HOSTS
-      - SECRET_KEY
-      - AUTH_SECRET
-      - JWT_SECRET
-      - EMAIL_HOST_USER
-      - EMAIL_HOST_PASSWORD
+    env_file: .env
     volumes:
       - static_volume:/app/src/static/
+    logging:
+      driver: journald
     depends_on:
       - db
 
   nginx:
     container_name: "${NGINX_CONTAINER_NAME}"
-    build: ../../nginx
+    build: ./nginx
     restart: always
     environment:
       - PORT
@@ -49,13 +37,17 @@ services:
     depends_on:
       - app
       - swagger
+    logging:
+      driver: journald
     volumes:
       - static_volume:/app/src/static/
 
   swagger:
     container_name: "${SWAGGER_CONTAINER_NAME}"
-    build: ../../swagger
-    restart: always
+    build: ./swagger
+    environment:
+      - BASE_URL=/swagger
+      - SWAGGER_JSON=/swagger/swagger.json
 
 volumes:
   db_volume:

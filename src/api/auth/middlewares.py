@@ -1,7 +1,8 @@
 import jwt
 from django.conf import settings
-from django.contrib.auth import get_user_model
-from django.core.exceptions import PermissionDenied
+from api.auth.models import APIUser
+from api.utils.errors import unauthorized_response
+from api.auth.models import TokenTypes
 
 
 def is_api_call(request):
@@ -15,12 +16,16 @@ class JWTAuthenticationMiddleware(object):
     def __call__(self, request):
         if is_api_call(request):
             try:
-                authentication = request.headers['authentication']
-                if not 'JWT ' in authentication:
-                    raise Exception('invalid token')
-                authentication = authentication.replace('JWT ', '')
-                payload = jwt.decode(authentication, settings.JWT_SECRET, algorithms=['HS256'])
-                user = get_user_model().objects.get(email=payload['email'])
+                authorization = request.headers['authorization']
+                if not 'Bearer ' in authorization:
+                    raise Exception
+                authorization = authorization.replace('Bearer ', '')
+
+                payload = jwt.decode(authorization, settings.JWT_SECRET, algorithms=['HS256'])
+                if payload['type'] != TokenTypes.authorization.name:
+                    raise Exception
+
+                user = APIUser.objects.get(id=payload['id'])
                 request.user = user
             except:
                 request.user = None
@@ -35,8 +40,8 @@ class SecretAuthenticationMiddleware(object):
 
     def __call__(self, request):
         if is_api_call(request):
-            if not request.META.get('HTTP_SECRET') == settings.AUTH_SECRET:
-                raise PermissionDenied
+            if not request.META.get('HTTP_SECRET') == settings.API_SECRET:
+                return unauthorized_response()
 
         response = self.get_response(request)
         return response

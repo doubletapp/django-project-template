@@ -4,10 +4,10 @@ from django.utils.translation import gettext as _
 from .models import APIUser
 
 
-def send_email_registration(user: APIUser):
+def send_registration_email(user: APIUser):
     send_mail(
         _('Registration'),
-        _('Seccessful registration in Luapp: Meditation and Slepp'),
+        _('Seccessful registration in project_name'),
         None,
         [user.email],
     )

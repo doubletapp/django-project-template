@@ -1,14 +1,19 @@
-# -*- coding: utf-8 -*-
-from __future__ import unicode_literals
-
 from django.contrib import admin
-from .auth.models import APIUser
+from django.contrib.auth.admin import UserAdmin
 
-admin.site.site_title = 'project_name administration'
-admin.site.site_header = 'project_name administration'
+from .auth.models import AdminUser, APIUser
+
+
+admin.site.site_title = 'project_name'
+admin.site.site_header = 'project_name'
 admin.site.enable_nav_sidebar = False
 
 
-admin.site.register(APIUser)
+@admin.register(AdminUser)
+class AdminUserAdmin(UserAdmin):
+    pass
 
-# Register your models here.
+
+@admin.register(APIUser)
+class APIUserAdmin(admin.ModelAdmin):
+    pass

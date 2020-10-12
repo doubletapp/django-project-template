@@ -1,0 +1,113 @@
+* {
+    font-family: Arial, sans-serif;
+    color: #4a4a4a;
+}
+
+body {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    background: #f5f9fd;
+}
+
+.reset-password-form {
+    min-height: 220px;
+    width: 310px;
+    margin: 0;
+}
+
+.reset-password-form__title {
+    font-size: 20px;
+    font-weight: 500;
+    text-align: center;
+}
+
+.reset-password-form__input-label {
+    display: block;
+    margin-top: 30px;
+    font-size: 14px;
+}
+
+.reset-password-form__input {
+    display: flex;
+    position: relative;
+    height: 40px;
+    border-bottom: 1px solid #e6e6e6;
+}
+
+.reset-password-form__input-field {
+    flex-grow: 1;
+    height: 40px;
+    font-size: 20px;
+    background: none;
+    border: none;
+    outline: none;
+}
+
+.reset-password-form__input-eye {
+    width: 40px;
+    height: 40px;
+    background: url('images/eye.svg') center no-repeat;
+}
+
+.reset-password-form__error {
+    position: absolute;
+    top: 50px;
+    font-size: 14px;
+    color: #ca3e57;
+    white-space: nowrap;
+}
+
+.reset-password-form__submit {
+    display: block;
+    width: 100%;
+    height: 50px;
+    margin-top: 50px;
+    border-radius: 25px;
+    background: white;
+    border: none;
+    color: #649acd;
+    font-size: 16px;
+    font-weight: 500;
+    outline: none;
+    cursor: pointer;
+    box-shadow: 0px 0px 10px 0px rgba(0, 0, 0, .05);
+}
+
+
+.reset-password-success {
+    min-height: 220px;
+    width: 350px;
+    text-align: center;
+}
+
+.reset-password-success__check {
+    position: relative;
+    width: 45px;
+    height: 45px;
+    box-sizing: border-box;
+    border: 2px solid #649acd;
+    border-radius: 50%;
+    margin: 0 auto;
+}
+
+.reset-password-success__check:after {
+    content: '';
+    position: absolute;
+    width: 38px;
+    height: 34px;
+    top: 0px;
+    left: 6px;
+    background: url('images/check.svg') center no-repeat;
+}
+
+.reset-password-success__title {
+    font-size: 20px;
+    font-weight: 500;
+    margin-top: 20px;
+}
+
+.reset-password-success__subtitle {
+    font-size: 16px;
+    margin-top: 20px;
+}

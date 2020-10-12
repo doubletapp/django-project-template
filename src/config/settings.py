@@ -19,7 +19,7 @@ from corsheaders.defaults import default_headers
 
 env = environ.Env(
     SECRET_KEY=(str, ''),
-    AUTH_SECRET=(str, ''),
+    API_SECRET=(str, ''),
     JWT_SECRET=(str, ''),
     POSTGRES_HOST=(str, ''),
     POSTGRES_DB=(str, ''),
@@ -29,8 +29,8 @@ env = environ.Env(
     ALLOWED_HOSTS=(str, ''),
 )
 
-SECRET_KEY = env('SECRET_KEY')
-AUTH_SECRET = env('AUTH_SECRET')
+SECRET_KEY = env('DJANGO_SECRET_KEY')
+API_SECRET = env('API_SECRET')
 JWT_SECRET = env('JWT_SECRET')
 
 
@@ -39,8 +39,6 @@ BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 
 DEBUG = env('DEBUG')
 ALLOWED_HOSTS = json.loads(env('ALLOWED_HOSTS'))
-
-ENVIRONMENT = env('ENVIRONMENT')
 
 
 # Application definition
@@ -70,16 +68,14 @@ MIDDLEWARE = [
 ]
 
 CORS_ORIGIN_ALLOW_ALL = True
-CORS_ALLOW_HEADERS = default_headers + (
-    'secret',
-)
+CORS_ALLOW_HEADERS = default_headers + ('secret',)
 
 ROOT_URLCONF = 'config.urls'
 
 TEMPLATES = [
     {
         'BACKEND': 'django.template.backends.django.DjangoTemplates',
-        'DIRS': [],
+        'DIRS': [os.path.join(BASE_DIR, 'api/templates')],
         'APP_DIRS': True,
         'OPTIONS': {
             'context_processors': [
