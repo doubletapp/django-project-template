@@ -7,9 +7,6 @@ from collections import defaultdict
 import yaml
 
 
-models = {}
-
-
 class SwaggerEncoder(json.JSONEncoder):
     def default(self, obj):
         if 'serialize' in dir(obj):
@@ -39,11 +36,11 @@ class SwaggerModel(object):
         if type(model_data) is str:
             link_name, is_link = Swagger.check_sign(model_data, Swagger.LINK_SIGN, True)
             if is_link:
-                if not link_name in models:
+                if not link_name in Swagger.models:
                     exit(f'Model ${link_name} does not exist yet. Maybe you messed up the order.')
 
-                self.type = models[link_name].type
-                self.properties = models[link_name].properties
+                self.type = Swagger.models[link_name].type
+                self.properties = Swagger.models[link_name].properties
                 return
 
             self.enum, model_data = Swagger.check_enum(model_data)
@@ -197,6 +194,8 @@ class Swagger(object):
     ARRAY_SIGN = '[]'
     LINK_SIGN = '$'
 
+    models = {}
+
     @staticmethod
     def check_sign(value, sign, starts_with_sign=False):
         if starts_with_sign:
@@ -222,7 +221,7 @@ class Swagger(object):
 
         for (model_name, model_data) in data['models'].items():
             model = SwaggerModel(model_name, model_data)
-            models[model.name] = model
+            Swagger.models[model.name] = model
 
         for (section_name, section_data) in data['handlers'].items():
             for (handler_name, handler_data) in section_data.items():
