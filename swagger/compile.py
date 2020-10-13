@@ -7,7 +7,7 @@ from collections import defaultdict
 import yaml
 
 
-class SwaggerEncoder(json.JSONEncoder):
+class SwaggerJSONEncoder(json.JSONEncoder):
     def default(self, obj):
         if 'serialize' in dir(obj):
             return obj.serialize()
@@ -19,6 +19,7 @@ class SwaggerModel(object):
         self.name = model_name
         self.type = None
         self.enum = None
+        self.example = None
         self.format = None
         self.properties = {}
 
@@ -44,6 +45,7 @@ class SwaggerModel(object):
                 return
 
             self.enum, model_data = Swagger.check_enum(model_data)
+            self.example, model_data = Swagger.check_example(model_data)
 
             if model_data == 'file':
                 model_data = 'string'
@@ -71,6 +73,9 @@ class SwaggerModel(object):
         if self.enum:
             data['enum'] = self.enum
 
+        if self.example:
+            data['example'] = self.example
+
         if self.format:
             data['format'] = self.format
 
@@ -83,7 +88,7 @@ class SwaggerModel(object):
         return data
 
     def __repr__(self):
-        return json.dumps(self, cls=SwaggerEncoder)
+        return json.dumps(self, cls=SwaggerJSONEncoder)
 
 
 class SwaggerParameter(object):
@@ -109,7 +114,7 @@ class SwaggerParameter(object):
         return data
 
     def __repr__(self):
-        return json.dumps(self, cls=SwaggerEncoder)
+        return json.dumps(self, cls=SwaggerJSONEncoder)
 
 
 class SwaggerHandler(object):
@@ -139,7 +144,7 @@ class SwaggerHandler(object):
             self.parameters.append(SwaggerParameter('query', query_name, query_value, is_required, enum))
 
     def __repr__(self):
-        return json.dumps(self, cls=SwaggerEncoder)
+        return json.dumps(self, cls=SwaggerJSONEncoder)
 
     def serialize(self):
         data = {
@@ -211,6 +216,15 @@ class Swagger(object):
             return enum_data, value.replace(enum_string, '')
         return None, value
 
+    @staticmethod
+    def check_example(value):
+        example_match = re.search(r'\((.*)\)', value)
+        if example_match:
+            example_match_string = example_match.group(0)
+            example_string = example_match.group(1)
+            return example_string, value.replace(example_match_string, '')
+        return None, value
+
     def __init__(self):
         self.paths = defaultdict(dict)
 
@@ -241,7 +255,7 @@ class Swagger(object):
             'paths': self.paths,
         }
 
-        output_stream.write(json.dumps(data, cls=SwaggerEncoder, indent=2))
+        output_stream.write(json.dumps(data, cls=SwaggerJSONEncoder, indent=2))
         return self
 
 
