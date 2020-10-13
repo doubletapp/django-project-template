@@ -82,7 +82,7 @@ class SwaggerModel(object):
         if self.is_array:
             data = {
                 'type': 'array',
-                'itmes': data,
+                'items': data,
             }
 
         return data
@@ -200,12 +200,13 @@ class Swagger(object):
     LINK_SIGN = '$'
 
     models = {}
+    error = None
 
     @staticmethod
     def check_sign(value, sign, starts_with_sign=False):
         if starts_with_sign:
             return (value[1:], True) if value[0] == sign else (value, False)
-        return (value[: -len(sign)], True) if value[-len(sign)] == sign else (value, False)
+        return (value[: -len(sign)], True) if value[-len(sign) :] == sign else (value, False)
 
     @staticmethod
     def check_enum(value):
@@ -243,6 +244,10 @@ class Swagger(object):
                 handler_method = handler_method.lower()
                 self.paths[handler_path][handler_method] = SwaggerHandler(section_name, handler_method, handler_path, handler_data)
 
+        error = data.get('error')
+        if error:
+            Swagger.error = SwaggerModel('schema', error)
+
         return self
 
     def write(self, output_stream):
@@ -254,6 +259,13 @@ class Swagger(object):
             },
             'paths': self.paths,
         }
+
+        if Swagger.error:
+            data['components'] = {
+                'schemas': {
+                    'ErrorResponse': Swagger.error,
+                },
+            }
 
         output_stream.write(json.dumps(data, cls=SwaggerJSONEncoder, indent=2))
         return self
