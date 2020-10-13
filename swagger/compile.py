@@ -129,8 +129,15 @@ class SwaggerHandler(object):
         self.deprecated = handler_data.get('deprecated', False)
         self.description = handler_data.get('description', None)
 
-        for match in re.findall(r'{(.*)}', handler_path):
-            self.parameters.append(SwaggerParameter('path', match, 'string', True))
+        for match in re.findall(r'{(.*)}', self.path):
+            data = match.split(':')
+            name = data[0]
+            if len(data) == 2:
+                type = data[1]
+                self.path = self.path.replace(match, data[0])
+            else:
+                type = 'number'
+            self.parameters.append(SwaggerParameter('path', name, type, True))
 
         headers = handler_data.get('headers', [])
         for header in headers:
@@ -242,7 +249,8 @@ class Swagger(object):
             for (handler_name, handler_data) in section_data.items():
                 handler_method, handler_path = handler_name.split(' ')
                 handler_method = handler_method.lower()
-                self.paths[handler_path][handler_method] = SwaggerHandler(section_name, handler_method, handler_path, handler_data)
+                handler = SwaggerHandler(section_name, handler_method, handler_path, handler_data)
+                self.paths[handler.path][handler.method] = SwaggerHandler(section_name, handler_method, handler_path, handler_data)
 
         error = data.get('error')
         if error:

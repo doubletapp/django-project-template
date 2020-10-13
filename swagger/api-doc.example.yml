@@ -38,6 +38,13 @@ handlers:
         token!: string(TOP_SECRET_TOKEN)
         new_password!: string
       response: $successResponse
+    POST /api/auth/reset_password_string_id/{id:string}:
+      description: test descruption
+      headers: [SECRET!]
+      request:
+        token!: string(TOP_SECRET_TOKEN)
+        new_password!: string
+      response: $successResponse
 models:
   successResponse:
     success: boolean
