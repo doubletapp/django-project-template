@@ -129,7 +129,7 @@ class SwaggerHandler(object):
         self.deprecated = handler_data.get('deprecated', False)
         self.description = handler_data.get('description', None)
 
-        for match in re.findall(r'{(.*)}', self.path):
+        for match in re.findall(r'{([^\{]+)}', self.path):
             data = match.split(':')
             name = data[0]
             if len(data) == 2:
