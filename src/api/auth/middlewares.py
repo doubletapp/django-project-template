@@ -45,8 +45,10 @@ class SecretAuthenticationMiddleware(object):
 
     def __call__(self, request):
         if is_api_call(request):
-            if not request.META.get('HTTP_SECRET') == settings.API_SECRET:
-                log.debug('incorrect secret')
+            secret = request.META.get('HTTP_SECRET')
+            if not secret == settings.API_SECRET:
+                if secret:
+                    log.debug('incorrect secret')
                 return unauthorized_response()
 
         response = self.get_response(request)
