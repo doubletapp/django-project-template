@@ -41,10 +41,6 @@ def unauthorized_response():
     )
 
 
-def print_traceback():
-    print()
-
-
 def handler500(request):
     log.critical('Unexpected 500\n' + traceback.format_exc())
     return error_response('unknown', 'Something went wrong. Please try again later.', status=500)
