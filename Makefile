@@ -1,3 +1,5 @@
+include .env
+
 all: build down migrate collectstatic up
 
 build:
@@ -37,5 +39,8 @@ swagger_build:
 
 swagger_dev:
 	docker-compose run --volume=${PWD}/swagger/build:/swagger --publish=8080:8080 swagger
+
+log:
+	sudo journalctl CONTAINER_NAME=${NGINX_CONTAINER_NAME} CONTAINER_NAME=${APP_CONTAINER_NAME} -o cat -f
 
 .PHONY: all build up down migrate test lint createsuperuser collectstatic makemigrations dev swagger_build swagger_dev

@@ -3,6 +3,7 @@ from django.conf import settings
 from api.auth.models import APIUser
 from api.utils.errors import unauthorized_response
 from api.auth.models import TokenTypes
+from api.logging import log
 
 
 def is_api_call(request):
@@ -16,13 +17,17 @@ class JWTAuthenticationMiddleware(object):
     def __call__(self, request):
         if is_api_call(request):
             try:
-                authorization = request.headers['authorization']
+                authorization = request.headers.get('authorization')
+                if not authorization:
+                    raise Exception
                 if not 'Bearer ' in authorization:
+                    log.debug('no "Bearer " in authorization header')
                     raise Exception
                 authorization = authorization.replace('Bearer ', '')
 
                 payload = jwt.decode(authorization, settings.JWT_SECRET, algorithms=['HS256'])
                 if payload['type'] != TokenTypes.authorization.name:
+                    log.debug('incorrect token type')
                     raise Exception
 
                 user = APIUser.objects.get(id=payload['id'])
@@ -41,6 +46,7 @@ class SecretAuthenticationMiddleware(object):
     def __call__(self, request):
         if is_api_call(request):
             if not request.META.get('HTTP_SECRET') == settings.API_SECRET:
+                log.debug('incorrect secret')
                 return unauthorized_response()
 
         response = self.get_response(request)

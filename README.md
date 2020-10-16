@@ -17,7 +17,7 @@ https://docs.docker.com/compose/install/
 
 ## Logs
 ```
-sudo journalctl CONTAINER_NAME=container_name
+sudo journalctl CONTAINER_NAME=container_name -o cat
 ```
 
 # Nginx

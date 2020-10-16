@@ -172,3 +172,26 @@ DATABASES = {
         'PORT': 5432,
     }
 }
+
+LOGGING = {
+    'version': 1,
+    'disable_existing_loggers': False,
+    'formatters': {
+        'default': {
+            'class': 'api.logging.Formatter',
+            'format': f'%(datetime)s %(loglevel)s %(source)s: %(message)s',
+        },
+    },
+    'handlers': {
+        'console': {
+            'class': 'logging.StreamHandler',
+            'formatter': 'default',
+        },
+    },
+    'loggers': {
+        'api': {
+            'level': 'DEBUG',
+            'handlers': ['console'],
+        },
+    },
+}
