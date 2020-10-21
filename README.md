@@ -113,4 +113,7 @@ You can read this [guide](https://rtfm.co.ua/aws-ses-simple-email-service-i-work
 5. Open `Email seding / SMTP settings / Create my SMTP Credentials` and Create user for this Mail Client (download Credentials.csv **this is the only chance**) or read this [guide](https://docs.aws.amazon.com/ses/latest/DeveloperGuide/smtp-credentials.html) 
 7. Data from `Credentials.csv` enter to  `.env / EMAIL_HOST_USER & EMAIL_HOST_PASSWORD`
 9. Open `Email seding / SendingStatistics / Edit your account Details` and submit for review this form or read [more information](https://docs.aws.amazon.com/ses/latest/DeveloperGuide/request-production-access.html?icmpid=docs_ses_console)
-10. If you use the sandbox you can only send emails to verified addresses `success@simulator.amazonses.com`
+10. For Enable production access, choose Yes or No. You can only move out of the sandbox by choosing Yes.
+11. If you use the sandbox you can only send emails to verified addresses `success@simulator.amazonses.com`
+
+
