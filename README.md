@@ -26,6 +26,7 @@ sudo journalctl CONTAINER_NAME=container_name -o cat
 ```
 server {
     listen 80;
+    client_max_body_size 30M;
     server_name project_name.doubletapp.ru;
 
     location / {
@@ -42,12 +43,14 @@ https://certbot.eff.org/lets-encrypt/ubuntuxenial-nginx
 ```
 server {
     listen 80;
+    client_max_body_size 30M;
     server_name project_name.doubletapp.ru;
     return 301 https://project_name.doubletapp.ru$request_uri;
 }
 
 server {
     listen 443 ssl;
+    client_max_body_size 30M;
     server_name project_name.doubletapp.ru;
 
     ssl_certificate /etc/letsencrypt/live/project_name.doubletapp.ru/fullchain.pem;
