@@ -43,4 +43,14 @@ swagger_dev:
 log:
 	sudo journalctl CONTAINER_NAME=${NGINX_CONTAINER_NAME} CONTAINER_NAME=${APP_CONTAINER_NAME} -o cat -f
 
+psql:
+	docker exec -it project_name_db--dev psql -U postgres
+
+shell:
+	docker-compose run app python manage.py shell
+
+jwt:
+	docker-compose run --rm --volume=${PWD}/src:/app/src app python manage.py shell -c "from api.auth.models import APIUser; print(APIUser.objects.get(email='${EMAIL}').get_auth_token())"
+
+
 .PHONY: all build up down migrate test lint createsuperuser collectstatic makemigrations dev swagger_build swagger_dev

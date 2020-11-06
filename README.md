@@ -101,3 +101,7 @@ change `volumes = ["/cache"]` to `volumes = ["/var/run/docker.sock:/var/run/dock
 3. Run swagger locally with `make swagger_dev`
 4. Or `make swagger_build swagger_dev` after making changes to rebuild and start
 5. Open http://127.0.0.1:8080/swagger/
+
+
+# JWT token
+EMAIL=user@test.com bash -c 'make jwt'
