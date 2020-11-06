@@ -103,5 +103,5 @@ change `volumes = ["/cache"]` to `volumes = ["/var/run/docker.sock:/var/run/dock
 5. Open http://127.0.0.1:8080/swagger/
 
 
-# JWT token
+# Obtain ApiUser's JWT
 EMAIL=user@test.com bash -c 'make jwt'
