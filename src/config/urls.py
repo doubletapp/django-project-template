@@ -15,6 +15,7 @@ Including another URLconf
 """
 from django.contrib import admin
 from django.urls import include, path
+from django.http import HttpResponse
 
 from api.auth.views import ResetPasswordFormHTMLView, ResetPasswordSuccessHTMLView
 
@@ -24,6 +25,7 @@ urlpatterns = [
     path('api/', include('api.urls')),
     path('reset_password_form', ResetPasswordFormHTMLView.as_view(), name='reset_password_form'),
     path('reset_password_success', ResetPasswordSuccessHTMLView.as_view(), name='reset_password_success'),
+    path('metrics$', lambda request: HttpResponse('')),
 ]
 
 handler500 = 'api.utils.errors.handler500'
