@@ -25,7 +25,7 @@ urlpatterns = [
     path('api/', include('api.urls')),
     path('reset_password_form', ResetPasswordFormHTMLView.as_view(), name='reset_password_form'),
     path('reset_password_success', ResetPasswordSuccessHTMLView.as_view(), name='reset_password_success'),
-    path('metrics$', lambda request: HttpResponse('')),
+    path('metrics', lambda request: HttpResponse('')),
 ]
 
 handler500 = 'api.utils.errors.handler500'
