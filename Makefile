@@ -52,5 +52,8 @@ shell:
 jwt:
 	docker-compose run --rm --volume=${PWD}/src:/app/src app python manage.py shell -c "from api.auth.models import APIUser; print(APIUser.objects.get(email='${EMAIL}').get_auth_token())"
 
+piplock:
+	docker-compose run --rm --no-deps --volume=${PWD}/src:/app/src --workdir=/app/src app pipenv install
+	sudo chown -R ${USER} src/Pipfile.lock
 
 .PHONY: all build up down migrate test lint createsuperuser collectstatic makemigrations dev swagger_build swagger_dev

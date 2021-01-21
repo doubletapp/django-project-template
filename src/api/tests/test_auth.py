@@ -1,14 +1,13 @@
 import json
 import urllib3
 import requests
-import responses
 
 from django.urls.base import reverse
 from django.test import TestCase, Client
 from django.test import RequestFactory
 from django.conf import settings
 
-from ..auth.models import APIUser
+from api.auth.models import APIUser
 
 client = Client()
 HEADER = {'HTTP_SECRET': settings.API_SECRET}
@@ -49,13 +48,14 @@ class EmailSignUpTest(TestCase):
         )
         answer = json.loads(response.content)
         correct_answer = {
-            'errors':
-                [
-                    {'code': 'auth', 'message': 'Please enter email and password.'}
-                ]
+            'errors': [{
+                'code': 'validation_failed',
+                'fields': {'password': ['This field is required.']},
+                'message': 'Validation failed'
+            }]
         }
 
         self.assertEqual(len(APIUser.objects.all()), 0)
         self.assertEqual(answer, correct_answer)
-        self.assertEqual(response.status_code, 400)
+        self.assertEqual(response.status_code, 422)
 

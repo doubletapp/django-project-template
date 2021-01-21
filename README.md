@@ -15,6 +15,11 @@ https://docs.docker.com/install/linux/docker-ce/ubuntu/
 ## Install docker-compose
 https://docs.docker.com/compose/install/
 
+## Install python deps
+1. add new dependency to Pipfile (paste from PyPi)
+2. run `make piplock` to update Pipfile.lock with new deps
+3. next `make build` will use new deps
+
 ## Logs
 ```
 sudo journalctl CONTAINER_NAME=container_name -o cat
