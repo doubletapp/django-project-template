@@ -20,8 +20,7 @@ sudo journalctl CONTAINER_NAME=container_name -o cat
 1. Edit `swagger/api-doc.yml`
 2. Build swagger with `make swagger_build`
 3. Run swagger locally with `make swagger_dev`
-4. Or `make swagger_build swagger_dev` after making changes to rebuild and start
-5. Open http://127.0.0.1:8080/swagger/
+4. Open http://127.0.0.1:8080/swagger/
 
 ## Obtain ApiUser's JWT
 EMAIL=user@test.com bash -c 'make jwt'
