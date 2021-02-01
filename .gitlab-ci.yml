@@ -1,103 +1,87 @@
-image: docker/compose:latest
-
-services:
-  - postgres
-  - docker:dind
-
-variables:
-  POSTGRES_HOST_AUTH_METHOD: trust
-  DOCKER_DRIVER: overlay2
-
-before_script:
-  - docker login -u "${DEPLOY_TOKEN_LOGIN}" -p "${DEPLOY_TOKEN_PSSWD}" registry.gitlab.com
-  - apk add make
+image: docker/compose:alpine-1.28.0
 
 stages:
   - build
-  - lint
   - test
   - deploy
 
-build_image_test:
+before_script:
+  - apk add make
+  - docker login -u $CI_REGISTRY_USER -p $CI_REGISTRY_PASSWORD $CI_REGISTRY
+  - cp $DOT_ENV $(pwd)/.env
+
+# === BUILD ===
+build.test:
   stage: build
-  environment:
+  script: # commands to execute
+    - make build
+    - docker-compose push
+  tags: # tags to select specific runners
+    - job:build
+  only: # branches to trigger
+    - deployment/test
+  environment: # env name to get env variables
     name: test
-  script:
-    - docker build --pull -t "$CI_REGISTRY_IMAGE" .
-    - docker push "$CI_REGISTRY_IMAGE"
-  only:
-    - testing
 
-build_image_prod:
+build.prod:
   stage: build
-  environment:
+  script: # commands to execute
+    - make build
+    - docker-compose push
+  tags: # tags to select specific runners
+    - job:build
+  only: # branches to trigger
+    - deployment/prod
+  environment: # env name to get env variables
     name: prod
-  script:
-    - docker build --pull -t "$CI_REGISTRY_IMAGE" .
-    - docker push "$CI_REGISTRY_IMAGE"
-  only:
-    - master
 
-flake8_test:
-  stage: lint
-  environment:
-    name: test
-  script:
-    - docker pull "$CI_REGISTRY_IMAGE"
-    - make lint
-  only:
-    - testing
-
-flake8_prod:
-  stage: lint
-  environment:
-    name: prod
-  script:
-    - docker pull "$CI_REGISTRY_IMAGE"
-    - make lint
-  only:
-    - master
-
-unittest_test:
+# === TEST ===
+test.test:
   stage: test
-  environment:
-    name: test
-  script:
-    - docker pull "$CI_REGISTRY_IMAGE"
+  script: # commands to execute
+    - docker-compose pull
     - make test
-  only:
-    - testing
+  tags: # tags to select specific runners
+    - job:test
+  only: # branches to trigger
+    - deployment/test
+  environment: # env name to get env variables
+    name: test
 
-unittest_prod:
+test.prod:
   stage: test
-  environment:
-    name: prod
-  script:
-    - docker pull "$CI_REGISTRY_IMAGE"
+  script: # commands to execute
+    - docker-compose pull
     - make test
-  only:
-    - master
-
-deploy_test:
-  stage: deploy
-  when: manual
-  environment:
-    name: test
-  script:
-    - docker pull "$CI_REGISTRY_IMAGE"
-    - make down collectstatic migrate up
-  only:
-    - testing
-
-deploy_prod:
-  stage: deploy
-  when: manual
-  environment:
+  tags: # tags to select specific runners
+    - job:test
+  only: # branches to trigger
+    - deployment/prod
+  environment: # env name to get env variables
     name: prod
-  script:
-    - docker pull "$CI_REGISTRY_IMAGE"
-    - make down collectstatic migrate up
-  only:
-    - master
 
+# === DEPLOY ===
+deploy.test/1:
+  stage: deploy
+  script: # commands to execute
+    - docker-compose pull
+    - make up
+  tags: # tags to select specific runners
+    - job:deploy.test/1
+  only: # branches to trigger
+    - deployment/test
+  environment: # env name to get env variables
+    name: test
 
+deploy.prod/1:
+  stage: deploy
+  script: # commands to execute
+    - docker-compose pull
+    - make down up
+  tags: # tags to select specific runners
+    - job:deploy.prod/1
+  only: # branches to trigger
+    - deployment/prod
+  environment: # env name to get env variables
+    name: prod
+  when: manual
