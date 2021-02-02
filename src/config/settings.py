@@ -195,3 +195,5 @@ LOGGING = {
         },
     },
 }
+
+PASSWORD_MIN_LENGTH = 8

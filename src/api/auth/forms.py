@@ -1,8 +1,9 @@
 from django import forms
 from django.utils.translation import gettext as _
+from django.conf import settings
 
-from .models import APIUser
 from api.forms import Form
+from api.auth.models import APIUser
 
 
 class SignUpForm(Form):
@@ -20,6 +21,10 @@ class SignUpForm(Form):
     def clean_password(self):
         password = self.cleaned_data['password']
         password = password.strip()
+
+        if len(password) < settings.PASSWORD_MIN_LENGTH:
+            raise forms.ValidationError(_('The password must be at least 8 characters long.'))
+
         return password
 
 
@@ -42,9 +47,20 @@ class ChangePasswordForm(Form):
 
     def clean_old_password(self):
         old_password = self.cleaned_data['old_password']
+
         if not self.request.user.check_password(old_password):
             raise forms.ValidationError(_('Incorrect password.'))
+
         return old_password
+
+    def clean_new_password(self):
+        password = self.cleaned_data['new_password']
+        password = password.strip()
+
+        if len(password) < settings.PASSWORD_MIN_LENGTH:
+            raise forms.ValidationError(_('The password must be at least 8 characters long.'))
+
+        return password
 
 
 class SendResetPasswordEmailForm(Form):
