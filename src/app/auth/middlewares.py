@@ -1,9 +1,9 @@
 import jwt
 from django.conf import settings
-from api.auth.models import APIUser
-from api.utils.errors import unauthorized_response
-from api.auth.models import TokenTypes
-from api.logging import log
+from app.auth.models import APIUser
+from app.utils.errors import unauthorized_response
+from app.auth.models import TokenTypes
+from app.logging import log
 
 
 def is_api_call(request):

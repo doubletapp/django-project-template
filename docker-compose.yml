@@ -16,11 +16,11 @@ services:
       nofile:
         soft: 4096
         hard: 4096
-    build: .
+    build: ./src
     restart: always
     env_file: .env
     volumes:
-      - static_volume:/app/src/static/
+      - static_volume:/src/static/
     logging:
       driver: journald
     depends_on:
@@ -40,7 +40,7 @@ services:
     logging:
       driver: journald
     volumes:
-      - static_volume:/app/src/static/
+      - static_volume:/src/static/
 
   swagger:
     container_name: "${SWAGGER_CONTAINER_NAME}"

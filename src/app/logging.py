@@ -22,4 +22,4 @@ class Formatter(logging.Formatter):
         return logging.Formatter.format(self, record)
 
 
-log = logging.getLogger('api')
+log = logging.getLogger('app')

@@ -7,7 +7,7 @@ from django.test import TestCase, Client
 from django.test import RequestFactory
 from django.conf import settings
 
-from api.auth.models import APIUser
+from app.auth.models import APIUser
 
 client = Client()
 HEADER = {'HTTP_SECRET': settings.API_SECRET}

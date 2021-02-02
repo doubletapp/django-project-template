@@ -51,7 +51,7 @@ INSTALLED_APPS = [
     'django.contrib.messages',
     'django.contrib.staticfiles',
     'django.contrib.gis',
-    'api',
+    'app',
     'corsheaders',
 ]
 
@@ -63,8 +63,8 @@ MIDDLEWARE = [
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
-    'api.auth.middlewares.SecretAuthenticationMiddleware',
-    'api.auth.middlewares.JWTAuthenticationMiddleware',
+    'app.auth.middlewares.SecretAuthenticationMiddleware',
+    'app.auth.middlewares.JWTAuthenticationMiddleware',
 ]
 
 CORS_ORIGIN_ALLOW_ALL = True
@@ -75,7 +75,7 @@ ROOT_URLCONF = 'config.urls'
 TEMPLATES = [
     {
         'BACKEND': 'django.template.backends.django.DjangoTemplates',
-        'DIRS': [os.path.join(BASE_DIR, 'api/templates')],
+        'DIRS': [os.path.join(BASE_DIR, 'app/templates')],
         'APP_DIRS': True,
         'OPTIONS': {
             'context_processors': [
@@ -160,7 +160,7 @@ MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
 FILE_UPLOAD_DIRECTORY_PERMISSIONS = 0o755
 FILE_UPLOAD_PERMISSIONS = 0o644
 
-AUTH_USER_MODEL = 'api.AdminUser'
+AUTH_USER_MODEL = 'app.AdminUser'
 
 DATABASES = {
     'default': {
@@ -178,7 +178,7 @@ LOGGING = {
     'disable_existing_loggers': False,
     'formatters': {
         'default': {
-            'class': 'api.logging.Formatter',
+            'class': 'app.logging.Formatter',
             'format': f'%(datetime)s %(loglevel)s %(source)s: %(message)s',
         },
     },
@@ -189,7 +189,7 @@ LOGGING = {
         },
     },
     'loggers': {
-        'api': {
+        'app': {
             'level': 'DEBUG',
             'handlers': ['console'],
         },

@@ -16,9 +16,9 @@ from django.conf import settings
 from django.template import loader
 from django.http import HttpResponse
 
-from api.utils.errors import error_response, not_valid_response, unauthorized_response
-from api.utils.urls import get_absolute_url
-from api.utils.decorators import validate_form
+from app.utils.errors import error_response, not_valid_response, unauthorized_response
+from app.utils.urls import get_absolute_url
+from app.utils.decorators import validate_form
 from .models import APIUser, TokenTypes
 from .forms import SignUpForm, LoginForm, ChangePasswordForm, SendResetPasswordEmailForm, ResetPasswordForm
 from .serializers import serialize_auth

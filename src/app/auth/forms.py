@@ -2,8 +2,8 @@ from django import forms
 from django.utils.translation import gettext as _
 from django.conf import settings
 
-from api.forms import Form
-from api.auth.models import APIUser
+from app.forms import Form
+from app.auth.models import APIUser
 
 
 class SignUpForm(Form):
