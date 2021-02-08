@@ -27,6 +27,9 @@ makemigrations:
 test:
 	docker-compose run app python manage.py test
 
+test-dev:
+	docker-compose run --volume=${PWD}/src:/app/src app python manage.py test
+
 lint:
 	docker-compose run app flake8 --ignore E, F401, F811
 
