@@ -1,5 +1,3 @@
-include .env
-
 all: build down migrate collectstatic up
 
 build:
@@ -44,7 +42,7 @@ swagger_dev:
 	docker-compose run --volume=${PWD}/swagger/build:/swagger --publish=8080:8080 swagger
 
 log:
-	sudo journalctl CONTAINER_NAME=${NGINX_CONTAINER_NAME} CONTAINER_NAME=${APP_CONTAINER_NAME} -o cat -f
+	sudo journalctl CONTAINER_NAME=project_name_nginx CONTAINER_NAME=project_name_app -o cat -f
 
 psql:
 	docker exec -it project_name_db--dev psql -U postgres
@@ -59,4 +57,9 @@ piplock:
 	docker-compose run --rm --no-deps --volume=${PWD}/src:/src --workdir=/src app pipenv install
 	sudo chown -R ${USER} src/Pipfile.lock
 
-.PHONY: all build up down migrate test lint createsuperuser collectstatic makemigrations dev swagger_build swagger_dev
+ENV_FILE ?= .env.tmp
+dotenv:
+	docker build -t commands ./commands
+	docker run commands /bin/sh -c 'python generate_dotenv.py && cat generate_dotenv/.env.example' > ${ENV_FILE}
+
+.PHONY: all build up down migrate test lint createsuperuser collectstatic makemigrations dev swagger_build swagger_dev dotenv
