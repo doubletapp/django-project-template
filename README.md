@@ -4,7 +4,8 @@ To use this template:
 2. `cd project_name && rm -rf .git`
 3. `git remote add origin your-project-git`
 4. replace all occurrences of `project_name` in code with your project name
-5. remove Template section from README.md
+5. ENV_FILE=.env make dotenv
+6. remove Template section from README.md
 
 ## Install python deps
 1. add new dependency to Pipfile (paste from PyPi)
@@ -25,10 +26,7 @@ sudo journalctl CONTAINER_NAME=container_name -o cat
 ## Obtain ApiUser's JWT
 EMAIL=user@test.com bash -c 'make jwt'
 
-## Generate secret keys
+## Generate temporary .env.tmp for ci
 ```
 make dotenv
-```
-```
-ENV_FILE=.env make dotenv
 ```
