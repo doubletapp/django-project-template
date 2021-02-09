@@ -24,3 +24,11 @@ sudo journalctl CONTAINER_NAME=container_name -o cat
 
 ## Obtain ApiUser's JWT
 EMAIL=user@test.com bash -c 'make jwt'
+
+## Generate secret keys
+```
+make dotenv
+```
+```
+ENV_FILE=.env make dotenv
+```
