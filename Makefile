@@ -9,8 +9,9 @@ up:
 down:
 	docker-compose down
 
+# $m [migration]
 migrate:
-	docker-compose run app python manage.py migrate
+	docker-compose run app python manage.py migrate $(if $m,app $m,)
 
 createsuperuser:
 	docker-compose run app python manage.py createsuperuser
@@ -41,8 +42,13 @@ swagger_build:
 swagger_dev:
 	docker-compose run --volume=${PWD}/swagger/build:/swagger --publish=8080:8080 swagger
 
-log:
-	sudo journalctl CONTAINER_NAME=project_name_nginx CONTAINER_NAME=project_name_app -o cat -f
+# $c [container name]
+# $p [params string]
+logs:
+	ifndef $c
+	$(error [container name] is not set)
+	endif
+	sudo journalctl CONTAINER_NAME=$c -o cat $(if $p,$p,)
 
 psql:
 	docker exec -it project_name_db--dev psql -U postgres
@@ -50,16 +56,20 @@ psql:
 shell:
 	docker-compose run app python manage.py shell
 
+# $e [email]
 jwt:
-	docker-compose run --rm --volume=${PWD}/src:/src app python manage.py shell -c "from app.auth.models import APIUser; print(APIUser.objects.get(email='${EMAIL}').get_auth_token())"
+	ifndef $e
+	$(error [email] is not set)
+	endif
+	docker-compose run --rm --volume=${PWD}/src:/src app python manage.py shell -c "from app.auth.models import APIUser; print(APIUser.objects.get(email='$e').get_auth_token())"
 
 piplock:
 	docker-compose run --rm --no-deps --volume=${PWD}/src:/src --workdir=/src app pipenv install
 	sudo chown -R ${USER} src/Pipfile.lock
 
-ENV_FILE ?= .env.tmp
+# $f [filename]
 dotenv:
 	docker build -t commands ./commands
-	docker run commands /bin/sh -c 'python generate_dotenv.py && cat generate_dotenv/.env.example' > ${ENV_FILE}
+	docker run commands /bin/sh -c 'python generate_dotenv.py && cat generate_dotenv/.env.example' > $(if $f,$f,.env.tmp)
 
 .PHONY: all build up down migrate test lint createsuperuser collectstatic makemigrations dev swagger_build swagger_dev dotenv

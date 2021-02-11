@@ -14,7 +14,8 @@ To use this template:
 
 ## Logs
 ```
-sudo journalctl CONTAINER_NAME=container_name -o cat
+make logs c=project_name_nginx p=-f
+make logs c=project_name_nginx p='--since="2021-02-11 05:04:00" --until="2021-02-11 05:05:00"'
 ```
 
 ## Swagger
@@ -24,9 +25,12 @@ sudo journalctl CONTAINER_NAME=container_name -o cat
 4. Open http://127.0.0.1:8080/swagger/
 
 ## Obtain ApiUser's JWT
-EMAIL=user@test.com bash -c 'make jwt'
+```
+make jwt e=user@test.com
+```
 
 ## Generate temporary .env.tmp for ci
 ```
 make dotenv
+make dotenv f=.env
 ```
