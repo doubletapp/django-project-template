@@ -2,7 +2,7 @@ import string
 import secrets
 import dotenv
 
-PUNCTUATION = "!@#$%^&*(-_=+)"
+PUNCTUATION = "!@#%^&*(-_=+)"
 PASSWORD_LENGTH = 64
 
 KEY_VARIABLES = (
