@@ -14,8 +14,8 @@ To use this template:
 
 ## Logs
 ```
-make logs c=project_name_nginx p=-f
-make logs c=project_name_nginx p='--since="2021-02-11 05:04:00" --until="2021-02-11 05:05:00"'
+make logs c=nginx p=-f
+make logs c=nginx p='--since="2021-02-11 05:04:00" --until="2021-02-11 05:05:00"'
 ```
 
 ## Swagger

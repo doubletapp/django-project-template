@@ -42,25 +42,22 @@ swagger_build:
 swagger_dev:
 	docker-compose run --volume=${PWD}/swagger/build:/swagger --publish=8080:8080 swagger
 
-# $c [container name]
+# $c [service name]
 # $p [params string]
 logs:
-	ifndef $c
-	$(error [container name] is not set)
-	endif
-	sudo journalctl CONTAINER_NAME=$c -o cat $(if $p,$p,)
+	sudo journalctl CONTAINER_NAME=project_name__$c -o cat $(if $p,$p,)
+
+sh:
+	docker exec -it project_name__$c sh
 
 psql:
-	docker exec -it project_name_db--dev psql -U postgres
+	docker exec -it project_name__db psql -U postgres
 
 shell:
 	docker-compose run app python manage.py shell
 
 # $e [email]
 jwt:
-	ifndef $e
-	$(error [email] is not set)
-	endif
 	docker-compose run --rm --volume=${PWD}/src:/src app python manage.py shell -c "from app.auth.models import APIUser; print(APIUser.objects.get(email='$e').get_auth_token())"
 
 piplock:

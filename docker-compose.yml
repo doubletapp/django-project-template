@@ -2,7 +2,7 @@ version: "3"
 
 services:
   db:
-    container_name: project_name_db
+    container_name: project_name__db
     image: mdillon/postgis:11-alpine
     restart: always
     volumes:
@@ -11,7 +11,7 @@ services:
       driver: journald
 
   app:
-    container_name: project_name_app
+    container_name: project_name__app
     ulimits:
       nofile:
         soft: 4096
@@ -27,11 +27,9 @@ services:
       - db
 
   nginx:
-    container_name: project_name_nginx
+    container_name: project_name__nginx
     build: ./nginx
     restart: always
-    environment:
-      - PORT
     ports:
       - ${PORT}:80
     depends_on:
@@ -43,7 +41,7 @@ services:
       - static_volume:/src/static/
 
   swagger:
-    container_name: project_name_swagger
+    container_name: project_name__swagger
     build: ./swagger
     environment:
       - BASE_URL=/swagger
