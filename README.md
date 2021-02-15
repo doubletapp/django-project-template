@@ -34,3 +34,11 @@ make jwt e=user@test.com
 make dotenv
 make dotenv f=.env
 ```
+
+### Local .env images example
+```
+IMAGE_DB=project_name__db
+IMAGE_APP=project_name__app
+IMAGE_NGINX=project_name__nginx
+IMAGE_SWAGGER=project_name__swagger
+```

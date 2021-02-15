@@ -14,8 +14,7 @@ before_script:
 build.test:
   stage: build
   script: # commands to execute
-    - make build
-    - docker-compose push
+    - make build push
   tags: # tags to select specific runners
     - job:build
   only: # branches to trigger
@@ -26,8 +25,7 @@ build.test:
 build.prod:
   stage: build
   script: # commands to execute
-    - make build
-    - docker-compose push
+    - make build push
   tags: # tags to select specific runners
     - job:build
   only: # branches to trigger
@@ -39,8 +37,7 @@ build.prod:
 test.test:
   stage: test
   script: # commands to execute
-    - docker-compose pull
-    - make test
+    - make pull test
   tags: # tags to select specific runners
     - job:test
   only: # branches to trigger
@@ -51,8 +48,7 @@ test.test:
 test.prod:
   stage: test
   script: # commands to execute
-    - docker-compose pull
-    - make test
+    - make pull test
   tags: # tags to select specific runners
     - job:test
   only: # branches to trigger
@@ -64,8 +60,7 @@ test.prod:
 deploy.test/1:
   stage: deploy
   script: # commands to execute
-    - docker-compose pull
-    - make up
+    - make pull down collectstatic migrate up
   tags: # tags to select specific runners
     - job:deploy.test/1
   only: # branches to trigger
@@ -76,8 +71,7 @@ deploy.test/1:
 deploy.prod/1:
   stage: deploy
   script: # commands to execute
-    - docker-compose pull
-    - make down up
+    - make pull down collectstatic migrate up
   tags: # tags to select specific runners
     - job:deploy.prod/1
   only: # branches to trigger

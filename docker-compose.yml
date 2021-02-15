@@ -3,7 +3,8 @@ version: "3"
 services:
   db:
     container_name: project_name__db
-    image: mdillon/postgis:11-alpine
+    build: ./postgres
+    image: ${IMAGE_DB}
     restart: always
     volumes:
       - db_volume:/var/lib/postgresql/data/
@@ -12,11 +13,12 @@ services:
 
   app:
     container_name: project_name__app
+    build: ./src
+    image: ${IMAGE_APP}
     ulimits:
       nofile:
         soft: 4096
         hard: 4096
-    build: ./src
     restart: always
     env_file: .env
     volumes:
@@ -29,6 +31,7 @@ services:
   nginx:
     container_name: project_name__nginx
     build: ./nginx
+    image: ${IMAGE_NGINX}
     restart: always
     ports:
       - ${PORT}:80
@@ -43,6 +46,7 @@ services:
   swagger:
     container_name: project_name__swagger
     build: ./swagger
+    image: ${IMAGE_SWAGGER}
     environment:
       - BASE_URL=/swagger
       - SWAGGER_JSON=/swagger/swagger.json

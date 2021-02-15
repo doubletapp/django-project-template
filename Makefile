@@ -1,5 +1,11 @@
 all: build down migrate collectstatic up
 
+pull:
+	docker-compose pull
+
+push:
+	docker-compose push
+
 build:
 	docker-compose build
 
