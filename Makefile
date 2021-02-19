@@ -51,7 +51,7 @@ swagger_dev:
 # $c [service name]
 # $p [params string]
 logs:
-	sudo journalctl CONTAINER_NAME=project_name__$c -o cat $(if $p,$p,)
+	journalctl CONTAINER_NAME=project_name__$c -o cat $(if $p,$p,)
 
 sh:
 	docker exec -it project_name__$c sh
