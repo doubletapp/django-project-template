@@ -33,8 +33,18 @@ services:
     image: ${IMAGE_NGINX}
     build: ./nginx
 
-    volumes: ["static_volume:/src/static/"]
+    volumes: ["static_volume:/src/static/", "nginx_log_volume:/var/log/nginx/"]
     ports: ["${PORT}:80"]
+
+    logging: *x-logging
+    restart: always
+
+  nginx-exporter:
+    container_name: project_name__nginx-exporter
+    image: ${IMAGE_NGINX_EXPORTER}
+    build: ./nginx-exporter
+
+    volumes: ["nginx_log_volume:/var/log/nginx/"]
 
     logging: *x-logging
     restart: always
@@ -50,3 +60,4 @@ services:
 volumes:
   db_volume:
   static_volume:
+  nginx_log_volume:
