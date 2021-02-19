@@ -1,55 +1,51 @@
-version: "3"
+version: "3.4"
+
+x-logging: &x-logging
+  driver: journald
+  options:
+    tag: "{{.Name}}"
 
 services:
   db:
     container_name: project_name__db
-    build: ./postgres
     image: ${IMAGE_DB}
+    build: ./postgres
+
+    volumes: ["db_volume:/var/lib/postgresql/data/"]
+
+    logging: *x-logging
     restart: always
-    volumes:
-      - db_volume:/var/lib/postgresql/data/
-    logging:
-      driver: journald
 
   app:
     container_name: project_name__app
-    build: ./src
     image: ${IMAGE_APP}
-    ulimits:
-      nofile:
-        soft: 4096
-        hard: 4096
-    restart: always
+    build: ./src
+
     env_file: .env
-    volumes:
-      - static_volume:/src/static/
-    logging:
-      driver: journald
-    depends_on:
-      - db
+    volumes: ["static_volume:/src/static/"]
+    depends_on: ["db"]
+
+    logging: *x-logging
+    restart: always
 
   nginx:
     container_name: project_name__nginx
-    build: ./nginx
     image: ${IMAGE_NGINX}
+    build: ./nginx
+
+    volumes: ["static_volume:/src/static/"]
+    ports: ["${PORT}:80"]
+
+    logging: *x-logging
     restart: always
-    ports:
-      - ${PORT}:80
-    depends_on:
-      - app
-      - swagger
-    logging:
-      driver: journald
-    volumes:
-      - static_volume:/src/static/
 
   swagger:
     container_name: project_name__swagger
-    build: ./swagger
     image: ${IMAGE_SWAGGER}
-    environment:
-      - BASE_URL=/swagger
-      - SWAGGER_JSON=/swagger/swagger.json
+    build: ./swagger
+
+    logging: *x-logging
+    restart: always
 
 volumes:
   db_volume:
