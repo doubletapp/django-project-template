@@ -13,69 +13,106 @@ before_script:
 # === BUILD ===
 build.test:
   stage: build
+  rules:
+    - if: $CI_COMMIT_BRANCH == "deployment/test" && $CI_PIPELINE_SOURCE == "push"
+      when: always
+    - when: never
   script: # commands to execute
     - make build push
   tags: # tags to select specific runners
     - job:build
-  only: # branches to trigger
-    - deployment/test
   environment: # env name to get env variables
     name: test
 
 build.prod:
   stage: build
+  rules:
+    - if: $CI_COMMIT_BRANCH == "deployment/prod" && $CI_PIPELINE_SOURCE == "push"
+      when: always
+    - when: never
   script: # commands to execute
     - make build push
   tags: # tags to select specific runners
     - job:build
-  only: # branches to trigger
-    - deployment/prod
   environment: # env name to get env variables
     name: prod
 
 # === TEST ===
 test.test:
   stage: test
+  rules:
+    - if: $CI_COMMIT_BRANCH == "deployment/test" && $CI_PIPELINE_SOURCE == "push"
+      when: always
+    - when: never
   script: # commands to execute
     - make pull test
   tags: # tags to select specific runners
     - job:test
-  only: # branches to trigger
-    - deployment/test
   environment: # env name to get env variables
     name: test
 
 test.prod:
   stage: test
+  rules:
+    - if: $CI_COMMIT_BRANCH == "deployment/prod" && $CI_PIPELINE_SOURCE == "push"
+      when: always
+    - when: never
   script: # commands to execute
     - make pull test
   tags: # tags to select specific runners
     - job:test
-  only: # branches to trigger
-    - deployment/prod
   environment: # env name to get env variables
     name: prod
 
 # === DEPLOY ===
 deploy.test/1:
   stage: deploy
+  rules:
+    - if: $CI_COMMIT_BRANCH == "deployment/test" && $CI_PIPELINE_SOURCE == "push"
+      when: always
+    - when: never
   script: # commands to execute
     - make pull down collectstatic migrate up
   tags: # tags to select specific runners
     - job:deploy.test/1
-  only: # branches to trigger
-    - deployment/test
   environment: # env name to get env variables
     name: test
 
 deploy.prod/1:
   stage: deploy
+  rules:
+    - if: $CI_COMMIT_BRANCH == "deployment/prod" && $CI_PIPELINE_SOURCE == "push"
+      when: manual
+    - when: never
   script: # commands to execute
     - make pull down collectstatic migrate up
   tags: # tags to select specific runners
     - job:deploy.prod/1
-  only: # branches to trigger
-    - deployment/prod
   environment: # env name to get env variables
     name: prod
-  when: manual
+
+exec.test:
+  rules:
+    - if: $CI_COMMIT_BRANCH == "deployment/test" && $CI_PIPELINE_SOURCE == "web"
+      when: always
+    - when: never
+  script: # commands to execute
+    - make pull
+    - $exec
+  tags: # tags to select specific runners
+    - job:deploy.test/1
+  environment: # env name to get env variables
+    name: test
+
+exec.prod:
+  rules:
+    - if: $CI_COMMIT_BRANCH == "deployment/prod" && $CI_PIPELINE_SOURCE == "web"
+      when: always
+    - when: never
+  script: # commands to execute
+    - make pull
+    - $exec
+  tags: # tags to select specific runners
+    - job:deploy.prod/1
+  environment: # env name to get env variables
+    name: prod
