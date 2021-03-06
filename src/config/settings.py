@@ -27,6 +27,11 @@ env = environ.Env(
     POSTGRES_PASSWORD=(str, ''),
     DEBUG=(bool, False),
     ALLOWED_HOSTS=(str, ''),
+    LOGSTASH_HOST=(str, ''),
+    LOGSTASH_PORT=(int, None),
+    LOGSTASH_SSL_ENABLE=(bool, False),
+    LOGSTASH_APP=(str, ''),
+    LOGSTASH_ENV=(str, ''),
 )
 
 SECRET_KEY = env('DJANGO_SECRET_KEY')
@@ -181,17 +186,34 @@ LOGGING = {
             'class': 'app.logging.Formatter',
             'format': f'%(datetime)s %(loglevel)s %(source)s: %(message)s',
         },
+        'logstash': {
+            '()': 'logstash_async.formatter.DjangoLogstashFormatter',
+            'message_type': 'python-logstash',
+            'extra_prefix': 'extra',
+            'extra': {'app': env('LOGSTASH_APP'), 'env': env('LOGSTASH_ENV')},
+            'fqdn': False,
+        },
     },
     'handlers': {
         'console': {
             'class': 'logging.StreamHandler',
             'formatter': 'default',
         },
+        'logstash': {
+            'level': 'DEBUG',
+            'class': 'logstash_async.handler.AsynchronousLogstashHandler',
+            'formatter': 'logstash',
+            'transport': 'logstash_async.transport.HttpTransport',
+            'host': env('LOGSTASH_HOST'),
+            'port': env('LOGSTASH_PORT'),
+            'ssl_enable': env('LOGSTASH_SSL_ENABLE'),
+            'database_path': None,
+        },
     },
     'loggers': {
         'app': {
             'level': 'DEBUG',
-            'handlers': ['console'],
+            'handlers': ['console', 'logstash'],
         },
     },
 }

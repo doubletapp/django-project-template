@@ -1,5 +1,6 @@
 import logging
 from datetime import datetime
+from copy import copy
 
 
 class Formatter(logging.Formatter):
@@ -13,13 +14,14 @@ class Formatter(logging.Formatter):
     def colorize(string, color):
         return f'{Formatter.COLOR_SEQ % (30 + color)}{string}{Formatter.RESET_SEQ}'
 
-    def format(self, record):
+    def format(self, _record):
+        record = copy(_record)
         now = self.formatTime(record, '%Y-%m-%d %H:%M:%S')
         loglevel = record.levelname
         record.datetime = Formatter.colorize(f'[{now}]', Formatter.BLACK)
         record.loglevel = Formatter.colorize(f'[{loglevel}]', Formatter.LOGLEVEL_COLORS[loglevel])
         record.source = Formatter.colorize(f'{record.pathname}:{record.lineno}', Formatter.CYAN)
-        return logging.Formatter.format(self, record)
+        return super().format(record)
 
 
 log = logging.getLogger('app')
