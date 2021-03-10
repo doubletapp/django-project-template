@@ -39,7 +39,7 @@ lint:
 	docker-compose run app flake8 --ignore E, F401, F811
 
 dev:
-	docker-compose run --volume=${PWD}/src:/src --publish=8000:8000 app python manage.py runserver 0.0.0.0:8000
+	docker-compose run --volume=${PWD}/src:/src --publish=8000:8000 --publish=3000:3000 app python manage.py runserver 0.0.0.0:8000
 
 swagger_build:
 	docker-compose run --volume=${PWD}/swagger:/app/swagger app python /app/swagger/compile.py

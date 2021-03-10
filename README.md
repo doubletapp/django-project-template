@@ -42,3 +42,16 @@ IMAGE_APP=project_name__app
 IMAGE_NGINX=project_name__nginx
 IMAGE_SWAGGER=project_name__swagger
 ```
+
+
+### Remote debugging (VS Code + Docker)
+```bash
+mkdir .vscode
+cp launch.example.json .vscode/launch.json
+
+# (!) make sure that you're using DEBUG=True in settings.py
+
+make dev
+# open "Run and Debug" tab in VS Code
+# press "Start Debugging"
+```
