@@ -128,19 +128,6 @@ USE_L10N = True
 
 USE_TZ = True
 
-
-# S3 settings
-# AWS_ACCESS_KEY_ID = env('AWS_ACCESS_KEY_ID')
-# AWS_SECRET_ACCESS_KEY = env('AWS_SECRET_ACCESS_KEY')
-# AWS_STORAGE_BUCKET_NAME = env('AWS_STORAGE_BUCKET_NAME')
-# AWS_LOCATION = env('AWS_LOCATION')
-# AWS_S3_CUSTOM_DOMAIN = f's3.{AWS_LOCATION}.amazonaws.com/{AWS_STORAGE_BUCKET_NAME}'
-# AWS_S3_OBJECT_PARAMETERS = {
-#     'CacheControl': 'max-age=86400',
-# }
-# DEFAULT_FILE_STORAGE = 'storages.backends.s3boto3.S3Boto3Storage'
-
-
 # Send email settings
 EMAIL_BACKEND = 'django.core.mail.backends.console.EmailBackend'
 # EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'

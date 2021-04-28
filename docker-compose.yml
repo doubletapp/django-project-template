@@ -28,7 +28,7 @@ services:
     build: ./src
 
     env_file: .env
-    volumes: ["static_volume:/src/static/"]
+    volumes: ["static_volume:/src/static/", "media_volume:/src/media/"]
     depends_on: ["db"]
 
     logging: *x-logging
@@ -67,4 +67,5 @@ volumes:
   db_volume:
   nginx_log_volume:
   static_volume:
+  media_volume:
     <<: *x-s3volume

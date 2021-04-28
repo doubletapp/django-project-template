@@ -55,7 +55,7 @@ AWS_S3_PATH=<AWS_BUCKET_PREFIX>
 
 ## Add rclone config to your env file
 ```bash
-make rclone
+make rclone f=.env
 ```
 
 ## Install docker plugin
