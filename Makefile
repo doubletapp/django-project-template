@@ -79,3 +79,6 @@ dotenv:
 rclone:
 	docker build -t commands ./commands
 	docker run --rm -v ${PWD}:/commands/src -e $(if $f,$f,.env) --env-file $(if $f,$f,.env) commands /bin/sh gen_rclone_conf.sh
+
+plugininstall:
+	docker plugin install sapk/plugin-rclone:v0.0.10 --grant-all-permissions

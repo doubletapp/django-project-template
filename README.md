@@ -58,6 +58,11 @@ AWS_S3_PATH=<AWS_BUCKET_PREFIX>
 make rclone
 ```
 
+## Install docker plugin
+```bash
+make plugininstall
+```
+
 ### Remote debugging (VS Code + Docker)
 ```bash
 mkdir .vscode
