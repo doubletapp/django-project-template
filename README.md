@@ -43,6 +43,20 @@ IMAGE_NGINX=project_name__nginx
 IMAGE_SWAGGER=project_name__swagger
 ```
 
+## Fill your AWS info in your env file.
+### Fill all vars in AWS S3 settings like:
+```
+AWS_ACCESS_KEY_ID=<YOUR_ACCESS_KEY_ID>
+AWS_SECRET_ACCESS_KEY=<YOUR_SECRET_ACCESS_KEY>
+AWS_STORAGE_BUCKET_NAME=<BUCKET_NAME_TO_MOUNT>
+AWS_LOCATION=<AWS_LOCATION>
+AWS_S3_PATH=<AWS_BUCKET_PREFIX>
+```
+
+## Add rclone config to your env file
+```bash
+make rclone
+```
 
 ### Remote debugging (VS Code + Docker)
 ```bash
