@@ -75,4 +75,7 @@ dotenv:
 	docker build -t commands ./commands
 	docker run commands /bin/sh -c 'python generate_dotenv.py && cat generate_dotenv/.env.example' > $(if $f,$f,.env.tmp)
 
-.PHONY: all build up down migrate test lint createsuperuser collectstatic makemigrations dev swagger_build swagger_dev dotenv
+# $f [filename]
+rclone:
+	docker build -t commands ./commands
+	docker run --rm -v ${PWD}:/commands/src -e $(if $f,$f,.env) --env-file $(if $f,$f,.env) commands /bin/sh gen_rclone_conf.sh
