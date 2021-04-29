@@ -3,7 +3,8 @@
 /static/
 /media/
 local_settings.py
-__pycache__
+/**/__pycache__/
+.pytest_cahce/
 *.pyc
 /.env*
 .idea
