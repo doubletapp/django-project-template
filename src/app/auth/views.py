@@ -1,28 +1,25 @@
 import json
-import jwt
 from datetime import datetime, timedelta
 
+import jwt
 import requests
-from django.http import JsonResponse
-from django.views import View
-from django.contrib.auth import get_user_model
 from django.conf import settings
 from django.core.mail import send_mail
-from django.urls.base import reverse
-from django.shortcuts import render, redirect
-from django.utils.translation import gettext as _
-from django.core.exceptions import PermissionDenied
-from django.conf import settings
-from django.template import loader
 from django.http import HttpResponse
+from django.http import JsonResponse
+from django.shortcuts import render, redirect
+from django.template import loader
+from django.urls.base import reverse
+from django.utils.translation import gettext as _
+from django.views import View
 
-from app.utils.errors import error_response, not_valid_response, unauthorized_response
-from app.utils.urls import get_absolute_url
 from app.utils.decorators import validate_form
-from .models import APIUser, TokenTypes
-from .forms import SignUpForm, LoginForm, ChangePasswordForm, SendResetPasswordEmailForm, ResetPasswordForm
-from .serializers import serialize_auth
+from app.utils.errors import error_response, unauthorized_response
+from app.utils.urls import get_absolute_url
 from .emails import send_registration_email
+from .forms import SignUpForm, LoginForm, ChangePasswordForm, SendResetPasswordEmailForm, ResetPasswordForm
+from .models import APIUser, TokenTypes
+from .serializers import serialize_auth
 
 
 class AuthenticatedView(View):

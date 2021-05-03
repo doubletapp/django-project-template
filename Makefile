@@ -30,10 +30,16 @@ makemigrations:
 	sudo chown -R ${USER} src/app/migrations/
 
 test:
-	docker-compose run app python manage.py test
+	docker-compose build
+	docker-compose run app pytest -v
 
 test-dev:
-	docker-compose run --volume=${PWD}/src:/app/src app python manage.py test
+	docker-compose build
+	docker-compose run --volume=${PWD}/src:/app/src app pytest -v
+
+test-cov:
+	docker-compose build
+	docker-compose run --volume=${PWD}/src/:/src/ --workdir="/src/app" app pytest --cov=. --cov-report html -v
 
 lint:
 	docker-compose run app flake8 --ignore E, F401, F811
