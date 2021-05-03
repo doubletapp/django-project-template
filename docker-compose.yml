@@ -13,7 +13,7 @@ x-s3volume: &x-s3volume
 
 services:
   db:
-    container_name: template_db
+    container_name: project_name__db
     image: ${IMAGE_DB}
     build: ./postgres
 
@@ -23,7 +23,7 @@ services:
     restart: always
 
   app:
-    container_name: template_app
+    container_name: project_name__app
     image: ${IMAGE_APP}
     build: ./src
 
@@ -35,7 +35,7 @@ services:
     restart: always
 
   nginx:
-    container_name: template_nginx
+    container_name: project_name__nginx
     image: ${IMAGE_NGINX}
     build: ./nginx
 
@@ -46,7 +46,7 @@ services:
     restart: always
 
   nginx-exporter:
-    container_name: template_nginx-exporter
+    container_name: project_name__nginx-exporter
     image: ${IMAGE_NGINX_EXPORTER}
     build: ./nginx-exporter
 
@@ -56,7 +56,7 @@ services:
     restart: always
 
   swagger:
-    container_name: template_swagger
+    container_name: project_name__swagger
     image: ${IMAGE_SWAGGER}
     build: ./swagger
 
