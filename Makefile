@@ -78,7 +78,7 @@ dotenv:
 # $f [filename]
 rclone:
 	docker build -t commands ./commands
-	docker run --rm -v ${PWD}:/commands/src -e $(if $f,$f,.env) --env-file $(if $f,$f,.env) commands /bin/sh gen_rclone_conf.sh
+	docker run --rm -v ${PWD}:/commands/src --env-file $(if $f,$f,.env) commands python3 set_rclone_config_base64.py
 
-plugininstall:
+rclone_plugin:
 	docker plugin install sapk/plugin-rclone:v0.0.10 --grant-all-permissions

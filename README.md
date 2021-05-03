@@ -4,8 +4,10 @@ To use this template:
 2. `cd project_name && rm -rf .git`
 3. `git remote add origin your-project-git`
 4. replace all occurrences of `project_name` in code with your project name
-5. ENV_FILE=.env make dotenv
-6. remove Template section from README.md
+5. `make rclone_plugin`
+6. `make dotenv f=.env`
+7. Fill your AWS info in `.env` file and then run `make rclone`
+8. remove Template section from README.md
 
 ## Install python deps
 1. add new dependency to Pipfile (paste from PyPi)
@@ -60,7 +62,7 @@ make rclone f=.env
 
 ## Install docker plugin
 ```bash
-make plugininstall
+make rclone-plugin
 ```
 
 ### Remote debugging (VS Code + Docker)
