@@ -18,6 +18,12 @@ from django.urls import include, path
 from django.http import HttpResponse
 
 from app.auth.views import ResetPasswordFormHTMLView, ResetPasswordSuccessHTMLView
+from app.emailer import emailer
+
+
+def email(request):
+    emailer.send_message('raigfp@gmail.com', 'test title', 'tst body')
+    return HttpResponse('')
 
 
 urlpatterns = [
@@ -26,6 +32,7 @@ urlpatterns = [
     path('reset_password_form', ResetPasswordFormHTMLView.as_view(), name='reset_password_form'),
     path('reset_password_success', ResetPasswordSuccessHTMLView.as_view(), name='reset_password_success'),
     path('ping', lambda request: HttpResponse('')),
+    path('email', email),
 ]
 
 handler500 = 'app.utils.errors.handler500'

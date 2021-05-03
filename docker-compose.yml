@@ -10,8 +10,12 @@ services:
     container_name: project_name__db
     image: ${IMAGE_DB}
     build: ./postgres
+    command: postgres -c 'max_connections=1000'
 
     volumes: ["db_volume:/var/lib/postgresql/data/"]
+
+    ports: 
+      - 54321:5432
 
     logging: *x-logging
     restart: always
