@@ -5,12 +5,6 @@ x-logging: &x-logging
   options:
     tag: "{{.Name}}"
 
-x-s3volume: &x-s3volume
-  driver: sapk/plugin-rclone:v0.0.10
-  driver_opts:
-    config: ${RCLONE_CONFIG_BASE64}
-    remote: "remote_s3:${AWS_STORAGE_BUCKET_NAME}${AWS_S3_PATH}"
-
 services:
   db:
     container_name: project_name__db
@@ -28,6 +22,7 @@ services:
     build: ./src
 
     env_file: .env
+
     volumes: ["static_volume:/src/static/", "media_volume:/src/media/"]
     depends_on: ["db"]
 
@@ -39,7 +34,11 @@ services:
     image: ${IMAGE_NGINX}
     build: ./nginx
 
-    volumes: ["static_volume:/src/static/", "nginx_log_volume:/var/log/nginx/"]
+    volumes:
+      - "static_volume:/src/static/"
+      - "nginx_log_volume:/var/log/nginx/"
+      - "media_volume:/src/media/"
+
     ports: ["${PORT}:80"]
 
     logging: *x-logging

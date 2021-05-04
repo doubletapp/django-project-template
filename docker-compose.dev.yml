@@ -1,1 +1,6 @@
 version: "3.4"
+
+services:
+  app:
+    environment:
+      DJANGO_MEDIA_URL: "/media/"

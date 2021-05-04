@@ -1,5 +1,1 @@
 version: "3.4"
-
-volumes:
-  media_volume:
-    <<: *x-s3volume
