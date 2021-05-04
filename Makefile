@@ -48,6 +48,10 @@ test-dev:
 	make build
 	docker-compose -f docker-compose.yml $(s3-if-needed) -f docker-compose.${ENV}.yml run --volume=${PWD}/src:/app/src app pytest -v
 
+test-cov:
+	docker-compose build
+	docker-compose -f docker-compose.yml $(s3-if-needed) -f docker-compose.${ENV}.yml run --volume=${PWD}/src/:/src/ --workdir="/src/app" app pytest --cov=. --cov-report html -v
+
 lint:
 	docker-compose -f docker-compose.yml $(s3-if-needed) -f docker-compose.${ENV}.yml run app flake8 --ignore E, F401, F811
 
