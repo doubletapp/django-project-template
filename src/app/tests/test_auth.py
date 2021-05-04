@@ -1,9 +1,11 @@
+import jwt
 import pytest
 from mixer.backend.django import mixer
-from app.auth.models import APIUser
-from app.auth.views import SignupView, LoginView, ChangePasswordView, SendResetPasswordEmailView
+
+from app.auth.models import APIUser, TokenTypes
+from app.auth.views import SignupView, LoginView, ChangePasswordView, SendResetPasswordEmailView, ResetPasswordView
 from app.tests import get_json_request, get_json_response
-from unittest.mock import MagicMock
+from datetime import datetime
 
 pytestmark = [pytest.mark.auth, pytest.mark.view, pytest.mark.django_db]
 
@@ -63,16 +65,22 @@ def test_login(request_data, expected_status_code):
     'actions',
     [
         [
-            {'view': SignupView, 'request_data': {'email': 'ExistingLower@2tapp.cc', 'password': 'Pa$$word'}, 'expected_status_code': 422},
-            {'view': LoginView, 'request_data': {'email': 'ExistingLower@2tapp.cc', 'password': 'Pa$$word'}, 'expected_status_code': 200},
+            {'view': SignupView, 'request_data': {'email': 'ExistingLower@2tapp.cc', 'password': 'Pa$$word'},
+             'expected_status_code': 422},
+            {'view': LoginView, 'request_data': {'email': 'ExistingLower@2tapp.cc', 'password': 'Pa$$word'},
+             'expected_status_code': 200},
         ],
         [
-            {'view': SignupView, 'request_data': {'email': 'New@2tapp.cc', 'password': 'Pa$$word'}, 'expected_status_code': 200},
-            {'view': LoginView, 'request_data': {'email': 'new@2tapp.cc', 'password': 'Pa$$word'}, 'expected_status_code': 200},
+            {'view': SignupView, 'request_data': {'email': 'New@2tapp.cc', 'password': 'Pa$$word'},
+             'expected_status_code': 200},
+            {'view': LoginView, 'request_data': {'email': 'new@2tapp.cc', 'password': 'Pa$$word'},
+             'expected_status_code': 200},
         ],
         [
-            {'view': SignupView, 'request_data': {'email': 'new@2tapp.cc', 'password': 'Pa$$word'}, 'expected_status_code': 200},
-            {'view': LoginView, 'request_data': {'email': 'New@2tapp.cc', 'password': 'Pa$$word'}, 'expected_status_code': 200},
+            {'view': SignupView, 'request_data': {'email': 'new@2tapp.cc', 'password': 'Pa$$word'},
+             'expected_status_code': 200},
+            {'view': LoginView, 'request_data': {'email': 'New@2tapp.cc', 'password': 'Pa$$word'},
+             'expected_status_code': 200},
         ],
     ],
     ids=[
@@ -95,7 +103,8 @@ def test_case_sensitiveness(actions):
         assert response.status_code == expected_status_code
 
         if response.status_code == 422:
-            assert response.data['errors'][0]['fields']['email'][0] == 'The user with the provided email already exists.'
+            assert response.data['errors'][0]['fields']['email'][
+                       0] == 'The user with the provided email already exists.'
 
         if response.status_code == 200:
             expected_email = request_data['email'].lower()
@@ -137,7 +146,7 @@ def test_change_password(registered_user, old_password, new_password, expected_s
     ],
     ids=[
         'registered mail able to change password',
-        'not registered user cannot reset password',
+        'say that email is sent even if user is not registered',
         'mail has to be correct',
         'mail is required',
     ],
@@ -147,5 +156,26 @@ def test_SendResetPasswordMail(registered_user, request_data, expected_status_co
     response = get_json_response(SendResetPasswordEmailView, request)
 
     assert response.status_code == expected_status_code
+    if response.status_code == 200:
+        assert response.data['success'] is True
 
 
+def test_ResetPasswordView(reset_password_fixture):
+    token = reset_password_fixture['token']
+    expected_status_code = reset_password_fixture['expected_status_code']
+    password = 'new cool password'
+
+    request_data = dict(
+        token=token,
+        password=password,
+    )
+
+    request = get_json_request('post', data=request_data)
+    response = get_json_response(ResetPasswordView, request)
+
+    assert response.status_code == expected_status_code
+    if response.status_code == 200:
+        assert response.data['success'] is True
+    else:
+        errors = response.data['errors']
+        assert any(error['code'] == 'auth' for error in errors)
