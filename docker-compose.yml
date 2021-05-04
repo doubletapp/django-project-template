@@ -68,4 +68,3 @@ volumes:
   nginx_log_volume:
   static_volume:
   media_volume:
-    <<: *x-s3volume
