@@ -3,11 +3,12 @@ To use this template:
 1. `git clone https://github.com/doubletapp/django-project-template.git project_name`
 2. `cd project_name && rm -rf .git`
 3. `git remote add origin your-project-git`
-4. replace all occurrences of `project_name` in code with your project name
+4. Replace all occurrences of `project_name` in code with your project name
 5. `make rclone_plugin`
 6. `make dotenv f=.env`
-7. Fill your AWS info in `.env` file and then run `make rclone`
-8. remove Template section from README.md
+7. Set `ENV` variable in .env file. Available variants are: `prod`, `dev`, `test` 
+7. Fill your AWS info in `.env` file
+8. Remove Template section from README.md
 
 ## Install python deps
 1. add new dependency to Pipfile (paste from PyPi)
