@@ -5,6 +5,7 @@ from .models import APIUser
 
 
 def send_registration_email(user: APIUser):
+    print('penis')
     send_mail(
         _('Registration'),
         _('Seccessful registration in project_name'),
