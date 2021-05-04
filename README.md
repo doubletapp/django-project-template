@@ -7,8 +7,8 @@ To use this template:
 5. `make rclone_plugin`
 6. `make dotenv f=.env`
 7. Set `ENV` variable in .env file. Available variants are: `prod`, `dev`, `test` 
-7. Fill your AWS info in `.env` file
-8. Remove Template section from README.md
+8. Fill your AWS info in `.env` file
+9. Remove Template section from README.md
 
 ## Install python deps
 1. add new dependency to Pipfile (paste from PyPi)
@@ -54,16 +54,6 @@ AWS_SECRET_ACCESS_KEY=<YOUR_SECRET_ACCESS_KEY>
 AWS_STORAGE_BUCKET_NAME=<BUCKET_NAME_TO_MOUNT>
 AWS_LOCATION=<AWS_LOCATION>
 AWS_S3_PATH=<AWS_BUCKET_PREFIX>
-```
-
-## Add rclone config to your env file
-```bash
-make rclone f=.env
-```
-
-## Install docker plugin
-```bash
-make rclone-plugin
 ```
 
 ### Remote debugging (VS Code + Docker)
