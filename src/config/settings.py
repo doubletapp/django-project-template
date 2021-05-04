@@ -151,7 +151,7 @@ EMAIL_BACKEND = 'django.core.mail.backends.console.EmailBackend'
 STATIC_URL = '/static/'
 STATIC_ROOT = os.path.join(BASE_DIR, 'static')
 
-MEDIA_URL = f"https://s3.{env('AWS_LOCATION')}.amazonaws.com/{env('AWS_STORAGE_BUCKET_NAME')}{env('AWS_S3_PATH')}"
+MEDIA_URL = f"https://s3.{env('AWS_LOCATION')}.amazonaws.com/{env('AWS_STORAGE_BUCKET_NAME')}{env('AWS_S3_PATH')}/"
 MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
 
 FILE_UPLOAD_DIRECTORY_PERMISSIONS = 0o755

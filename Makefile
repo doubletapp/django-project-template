@@ -7,6 +7,7 @@ push:
 	docker-compose push
 
 build:
+	make rclone
 	docker-compose build
 
 up:
