@@ -65,22 +65,16 @@ def test_login(request_data, expected_status_code):
     'actions',
     [
         [
-            {'view': SignupView, 'request_data': {'email': 'ExistingLower@2tapp.cc', 'password': 'Pa$$word'},
-             'expected_status_code': 422},
-            {'view': LoginView, 'request_data': {'email': 'ExistingLower@2tapp.cc', 'password': 'Pa$$word'},
-             'expected_status_code': 200},
+            {'view': SignupView, 'request_data': {'email': 'ExistingLower@2tapp.cc', 'password': 'Pa$$word'}, 'expected_status_code': 422},
+            {'view': LoginView, 'request_data': {'email': 'ExistingLower@2tapp.cc', 'password': 'Pa$$word'}, 'expected_status_code': 200},
         ],
         [
-            {'view': SignupView, 'request_data': {'email': 'New@2tapp.cc', 'password': 'Pa$$word'},
-             'expected_status_code': 200},
-            {'view': LoginView, 'request_data': {'email': 'new@2tapp.cc', 'password': 'Pa$$word'},
-             'expected_status_code': 200},
+            {'view': SignupView, 'request_data': {'email': 'New@2tapp.cc', 'password': 'Pa$$word'}, 'expected_status_code': 200},
+            {'view': LoginView, 'request_data': {'email': 'new@2tapp.cc', 'password': 'Pa$$word'}, 'expected_status_code': 200},
         ],
         [
-            {'view': SignupView, 'request_data': {'email': 'new@2tapp.cc', 'password': 'Pa$$word'},
-             'expected_status_code': 200},
-            {'view': LoginView, 'request_data': {'email': 'New@2tapp.cc', 'password': 'Pa$$word'},
-             'expected_status_code': 200},
+            {'view': SignupView, 'request_data': {'email': 'new@2tapp.cc', 'password': 'Pa$$word'}, 'expected_status_code': 200},
+            {'view': LoginView, 'request_data': {'email': 'New@2tapp.cc', 'password': 'Pa$$word'}, 'expected_status_code': 200},
         ],
     ],
     ids=[
