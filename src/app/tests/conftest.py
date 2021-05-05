@@ -74,4 +74,3 @@ def reset_password_fixture(request, registered_user):
         token=token,
         expected_status_code=expected_code
     )
-
