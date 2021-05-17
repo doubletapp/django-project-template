@@ -22,7 +22,8 @@ services:
     build: ./src
 
     env_file: .env
-    volumes: ["static_volume:/src/static/"]
+
+    volumes: ["static_volume:/src/static/", "media_volume:/src/media/"]
     depends_on: ["db"]
 
     logging: *x-logging
@@ -33,7 +34,11 @@ services:
     image: ${IMAGE_NGINX}
     build: ./nginx
 
-    volumes: ["static_volume:/src/static/", "nginx_log_volume:/var/log/nginx/"]
+    volumes:
+      - "static_volume:/src/static/"
+      - "nginx_log_volume:/var/log/nginx/"
+      - "media_volume:/src/media/"
+
     ports: ["${PORT}:80"]
 
     logging: *x-logging
@@ -59,5 +64,6 @@ services:
 
 volumes:
   db_volume:
-  static_volume:
   nginx_log_volume:
+  static_volume:
+  media_volume:

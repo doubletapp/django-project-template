@@ -42,4 +42,4 @@ class APIUserForm(ModelForm):
 @admin.register(APIUser)
 class APIUserAdmin(admin.ModelAdmin):
     form = APIUserForm
-    list_display = ('email',)
+    list_display = ('email', 'avatar')

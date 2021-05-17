@@ -1,11 +1,8 @@
 import json
-import urllib3
-import requests
 
-from django.urls.base import reverse
-from django.test import TestCase, Client
-from django.test import RequestFactory
 from django.conf import settings
+from django.test import TestCase, Client
+from django.urls.base import reverse
 
 from app.auth.models import APIUser
 
@@ -58,4 +55,3 @@ class EmailSignUpTest(TestCase):
         self.assertEqual(len(APIUser.objects.all()), 0)
         self.assertEqual(answer, correct_answer)
         self.assertEqual(response.status_code, 422)
-

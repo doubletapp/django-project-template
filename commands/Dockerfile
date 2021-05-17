@@ -4,4 +4,4 @@ WORKDIR /commands
 
 COPY . .
 
-RUN pip install python-dotenv 
+RUN pip install python-dotenv && apk add --no-cache gettext

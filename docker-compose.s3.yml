@@ -1,0 +1,17 @@
+version: "3.4"
+
+x-s3volume: &x-s3volume
+  driver: sapk/plugin-rclone:v0.0.10
+  driver_opts:
+    config: ${RCLONE_CONFIG_BASE64}
+    remote: "remote_s3:${AWS_STORAGE_BUCKET_NAME}${AWS_S3_PATH}"
+
+
+services:
+  app:
+    environment:
+      DJANGO_MEDIA_URL: "https://${AWS_ENDPOINT}/${AWS_STORAGE_BUCKET_NAME}${AWS_S3_PATH}"
+
+volumes:
+  media_volume:
+    <<: *x-s3volume

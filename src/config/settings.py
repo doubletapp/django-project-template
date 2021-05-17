@@ -32,6 +32,7 @@ env = environ.Env(
     LOGSTASH_SSL_ENABLE=(bool, False),
     LOGSTASH_APP=(str, ''),
     LOGSTASH_ENV=(str, ''),
+    DJANGO_MEDIA_URL=(str, '/media/'),
 )
 
 SECRET_KEY = env('DJANGO_SECRET_KEY')
@@ -128,19 +129,6 @@ USE_L10N = True
 
 USE_TZ = True
 
-
-# S3 settings
-# AWS_ACCESS_KEY_ID = env('AWS_ACCESS_KEY_ID')
-# AWS_SECRET_ACCESS_KEY = env('AWS_SECRET_ACCESS_KEY')
-# AWS_STORAGE_BUCKET_NAME = env('AWS_STORAGE_BUCKET_NAME')
-# AWS_LOCATION = env('AWS_LOCATION')
-# AWS_S3_CUSTOM_DOMAIN = f's3.{AWS_LOCATION}.amazonaws.com/{AWS_STORAGE_BUCKET_NAME}'
-# AWS_S3_OBJECT_PARAMETERS = {
-#     'CacheControl': 'max-age=86400',
-# }
-# DEFAULT_FILE_STORAGE = 'storages.backends.s3boto3.S3Boto3Storage'
-
-
 # Send email settings
 EMAIL_BACKEND = 'django.core.mail.backends.console.EmailBackend'
 # EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
@@ -152,14 +140,13 @@ EMAIL_BACKEND = 'django.core.mail.backends.console.EmailBackend'
 # EMAIL_USE_TLS = False
 # EMAIL_USE_SSL = True
 
-
 # Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/1.11/howto/static-files/
 
 STATIC_URL = '/static/'
 STATIC_ROOT = os.path.join(BASE_DIR, 'static')
 
-MEDIA_URL = '/media/'
+MEDIA_URL = env('DJANGO_MEDIA_URL')
 MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
 
 FILE_UPLOAD_DIRECTORY_PERMISSIONS = 0o755

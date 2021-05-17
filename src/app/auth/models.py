@@ -22,6 +22,7 @@ class AdminUser(AbstractUser):
 class APIUser(models.Model):
     email = models.EmailField(unique=True, verbose_name=_('Email'))
     password = models.CharField(max_length=255, verbose_name=_('Password'))
+    avatar = models.ImageField(null=True, blank=True)
 
     class Meta:
         verbose_name = _('APIUser')
