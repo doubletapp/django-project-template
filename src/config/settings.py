@@ -9,6 +9,10 @@ https://docs.djangoproject.com/en/1.11/topics/settings/
 For the full list of settings and their values, see
 https://docs.djangoproject.com/en/1.11/ref/settings/
 """
+#
+# from request_logging.middleware import LoggingMiddleware
+# import logstash_async.formatter
+# import logstash_async.handler
 
 import os
 import environ
@@ -62,6 +66,8 @@ INSTALLED_APPS = [
 ]
 
 MIDDLEWARE = [
+    'request_logging.middleware.LoggingMiddleware',
+
     'django.middleware.security.SecurityMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
     'corsheaders.middleware.CorsMiddleware',
@@ -201,7 +207,13 @@ LOGGING = {
         'app': {
             'level': 'DEBUG',
             'handlers': ['console', 'logstash'],
+            'propagate': False,
         },
+        'django.request': {
+            'level': 'DEBUG',
+            'handlers': ['logstash', 'console'],
+            'propagate': False,
+        }
     },
 }
 

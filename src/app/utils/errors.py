@@ -52,6 +52,7 @@ def handler400(request, exception):
 
 
 def handler404(request, exception):
+    log.warning('Not Found')
     return error_response('notfound', 'Not found.', status=404)
 
 
