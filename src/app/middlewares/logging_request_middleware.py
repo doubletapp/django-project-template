@@ -1,4 +1,5 @@
 import logging
+import sys
 from logging import getLogger
 
 from django.http import HttpRequest, HttpResponse
@@ -37,9 +38,9 @@ class LoggingRequestMiddleware:
 
         level = logging.INFO
         if 500 <= response.status_code < 600:
-            level = logging.ERROR
+            level = logging.CRITICAL
         if 400 <= response.status_code < 500:
-            level = logging.WARNING
+            level = logging.ERROR
 
         msg = f'[{total_ms:.3f} ms] {request.method} {request.path} {response.status_code}'
         if response.status_code != 200:
@@ -52,14 +53,19 @@ class LoggingRequestMiddleware:
                 for key, value in to_log.items()
             )
 
-        if response.status_code == 500:
-            msg += '\nTHIS IS TRACEBACK'
+        if response.status_code == 500 and hasattr(request, 'exc_info'):
+            ex = getattr(request, 'exc_info')
+            tb_str = ''.join(traceback.format_exception(type(ex), ex, ex.__traceback__))
+            msg += f'\n{tb_str}'
+            fields.update(dict(
+                traceback=tb_str,
+            ))
 
         log.log(level, msg, extra=fields)
         return response
 
-    # def process_exception(self, request: HttpRequest, exception: Exception):
-    #     tb_str = ''.join(traceback.format_exception(etype=type(exception), value=exception, tb=exception.__traceback__))
+    def process_exception(self, request: HttpRequest, exception: Exception):
+        request.exc_info = exception
 
     def _get_request_fields(self, request: HttpRequest):
         return {}
