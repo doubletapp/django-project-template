@@ -1,5 +1,4 @@
 import logging
-import sys
 from logging import getLogger
 
 from django.http import HttpRequest, HttpResponse
@@ -28,8 +27,6 @@ class LoggingRequestMiddleware:
         end_ns = time.perf_counter_ns()
 
         total_ms = (end_ns - start_ns) / 1e6
-        response: HttpResponse
-
         fields.update(dict(total_ms=total_ms))
         fields.update(self._get_response_fields(response))
         if response.status_code != 200:
@@ -96,6 +93,3 @@ class LoggingRequestMiddleware:
             res_status_code=response.status_code,
         )
         return fields
-
-    def _gen_log_message_with_tb(self, request: HttpRequest, tb: str):
-        pass
