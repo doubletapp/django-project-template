@@ -66,7 +66,7 @@ INSTALLED_APPS = [
 ]
 
 MIDDLEWARE = [
-    'request_logging.middleware.LoggingMiddleware',
+    'app.middlewares.logging_request_middleware.LoggingRequestMiddleware',
 
     'django.middleware.security.SecurityMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
@@ -209,11 +209,6 @@ LOGGING = {
             'handlers': ['console', 'logstash'],
             'propagate': False,
         },
-        'django.request': {
-            'level': 'DEBUG',
-            'handlers': ['logstash', 'console'],
-            'propagate': False,
-        }
     },
 }
 

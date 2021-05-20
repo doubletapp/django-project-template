@@ -6,12 +6,12 @@ from django.http import HttpRequest, HttpResponse
 import time
 import traceback
 
-log = getLogger('all_requests')
+log = getLogger('app')
 
 
 SENSITIVE_HEADERS = [
-    "HTTP_AUTHORIZATION",
-    "HTTP_PROXY_AUTHORIZATION",
+    "Authorization",
+    "Proxy-Authorization",
 ]
 
 
@@ -26,7 +26,7 @@ class LoggingRequestMiddleware:
         response = self.get_response(request, *args, **kwargs)
         end_ns = time.perf_counter_ns()
 
-        total_ms = (end_ns - start_ns) / 1000
+        total_ms = (end_ns - start_ns) / 1e6
         response: HttpResponse
 
         fields.update(dict(total_ms=total_ms))
@@ -41,28 +41,43 @@ class LoggingRequestMiddleware:
         if 400 <= response.status_code < 500:
             level = logging.WARNING
 
-        msg = f''
+        msg = f'[{total_ms:.3f} ms] {request.method} {request.path} {response.status_code}'
+        if response.status_code != 200:
+            to_log = dict(
+                **self._get_request_headers(request),
+                body=request.body.decode(errors='ignore')
+            )
+            msg += '\n' + '\n'.join(
+                f'{key}: {value}'
+                for key, value in to_log.items()
+            )
+
+        if response.status_code == 500:
+            msg += '\nTHIS IS TRACEBACK'
+
         log.log(level, msg, extra=fields)
+        return response
 
-    def process_exception(self, request: HttpRequest, exception: Exception):
-        tb_str = ''.join(traceback.format_exception(etype=type(exception), value=exception, tb=exception.__traceback__))
-
-        return None
+    # def process_exception(self, request: HttpRequest, exception: Exception):
+    #     tb_str = ''.join(traceback.format_exception(etype=type(exception), value=exception, tb=exception.__traceback__))
 
     def _get_request_fields(self, request: HttpRequest):
         return {}
 
     def _get_extra_request_fields(self, request: HttpRequest):
-        headers = {
-            f'req_{key}': value if key not in SENSITIVE_HEADERS else '******'
-            for key, value in request.headers.items()
-        }
+        headers = {f'req_{key}': value for key, value in self._get_request_headers(request).items()}
         fields = dict(
             **headers,
             req_body=request.body.decode(errors='ignore'),
         )
 
         return fields
+
+    def _get_request_headers(self, request: HttpRequest):
+        return {
+            key: value if key not in SENSITIVE_HEADERS else '******'
+            for key, value in request.headers.items()
+        }
 
     def _get_extra_response_fields(self, response: HttpResponse):
         fields = dict(
