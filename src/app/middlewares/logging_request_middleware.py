@@ -6,8 +6,20 @@ from django.http import HttpRequest, HttpResponse
 import time
 import traceback
 
-log = getLogger('app')
 
+def makeRecord(self, name, level, fn, lno, msg, args, exc_info, func=None, extra=None, sinfo=None):
+    """
+    A factory method which can be overridden in subclasses to create
+    specialized LogRecords.
+    """
+    rv = logging.LogRecord(name, level, fn, lno, msg, args, exc_info, func, sinfo)
+    if extra is not None:
+        rv.__dict__.update(extra)
+    return rv
+
+
+log = getLogger('app')
+log.__class__.makeRecord = makeRecord
 
 SENSITIVE_HEADERS = [
     "Authorization",
@@ -56,6 +68,7 @@ class LoggingRequestMiddleware:
             msg += f'\n{tb_str}'
             fields.update(dict(
                 traceback=tb_str,
+                **self._get_path_and_line_of_exc(ex)
             ))
 
         log.log(level, msg, extra=fields)
@@ -93,3 +106,20 @@ class LoggingRequestMiddleware:
             res_status_code=response.status_code,
         )
         return fields
+
+    def _get_path_and_line_of_exc(self, ex):
+        tb = self._get_last_tb_obj(ex.__traceback__)
+        pathname = tb.tb_frame.f_code.co_filename
+        lineno = tb.tb_lineno
+
+        return dict(
+            pathname=pathname,
+            lineno=lineno,
+        )
+
+    def _get_last_tb_obj(self, tb):
+        cur = tb
+        while cur.tb_next is not None:
+            cur = cur.tb_next
+
+        return cur
