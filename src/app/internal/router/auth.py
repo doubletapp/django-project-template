@@ -1,12 +1,12 @@
 from django.urls import path
 
-from .views import (
-    LoginView,
-    SignupView,
-    ChangePasswordView,
-    SendResetPasswordEmailView,
-    ResetPasswordView,
-)
+# from .views import (
+#     LoginView,
+#     SignupView,
+#     ChangePasswordView,
+#     SendResetPasswordEmailView,
+#     ResetPasswordView,
+# )
 
 
 urlpatterns = [

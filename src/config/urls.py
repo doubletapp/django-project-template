@@ -19,13 +19,11 @@ from django.http import HttpResponse
 
 from app.auth.views import ResetPasswordFormHTMLView, ResetPasswordSuccessHTMLView
 
-
 urlpatterns = [
     path('admin/', admin.site.urls),
-    path('api/', include('app.urls')),
+    path('api/', include('app.internal.router')),
     path('reset_password_form', ResetPasswordFormHTMLView.as_view(), name='reset_password_form'),
     path('reset_password_success', ResetPasswordSuccessHTMLView.as_view(), name='reset_password_success'),
-    path('ping', lambda request: HttpResponse('')),
 ]
 
 handler500 = 'app.utils.errors.handler500'
