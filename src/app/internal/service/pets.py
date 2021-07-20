@@ -11,5 +11,6 @@ class PetService:
         if fields:
             queryset = queryset.values(*fields)
         
-        return paginate(queryset, limit=limit, offset=offset)
+        
+        return paginate(queryset, limit=limit, offset=offset),
         
