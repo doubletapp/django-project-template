@@ -10,7 +10,7 @@ x-s3volume: &x-s3volume
 services:
   app:
     environment:
-      DJANGO_MEDIA_URL: "https://s3.${AWS_LOCATION}.amazonaws.com/${AWS_STORAGE_BUCKET_NAME}${AWS_S3_PATH}"
+      DJANGO_MEDIA_URL: "https://${AWS_ENDPOINT}/${AWS_STORAGE_BUCKET_NAME}${AWS_S3_PATH}"
 
 volumes:
   media_volume:

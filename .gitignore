@@ -8,6 +8,5 @@ local_settings.py
 /.env*
 /**/.idea/
 /**/.pytest_cache/
-.idea
 /**/htmlcov/
 /**/.coverage*

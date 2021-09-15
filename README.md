@@ -7,7 +7,7 @@ To use this template:
 5. `make rclone_plugin`
 6. `make dotenv f=.env`
 7. Set `ENV` variable in .env file. Available variants are: `prod`, `dev`, `test` 
-8. Fill your AWS info in `.env` file
+8. Fill your AWS info in `.env` file (more info in __FILL_AWS_INFO__ section)
 9. Remove Template section from README.md
 
 ## Install python deps
@@ -46,15 +46,21 @@ IMAGE_NGINX=project_name__nginx
 IMAGE_SWAGGER=project_name__swagger
 ```
 
-## Fill your AWS info in your env file.
-### Fill all vars in AWS S3 settings like:
+## Fill AWS INFO
+### Fill all vars in AWS S3 settings in your env file like:
 ```
+AWS_PROVIDER=<One of "DigitalOcean" or "AWS">
 AWS_ACCESS_KEY_ID=<YOUR_ACCESS_KEY_ID>
 AWS_SECRET_ACCESS_KEY=<YOUR_SECRET_ACCESS_KEY>
 AWS_STORAGE_BUCKET_NAME=<BUCKET_NAME_TO_MOUNT>
 AWS_LOCATION=<AWS_LOCATION>
 AWS_S3_PATH=<AWS_BUCKET_PREFIX>
 ```
+
+## More about AWS_LOCATION
+- Example for DigitalOcean provider: `fra1`. You may see other locations in documentation.
+- Example for AWS provider: `eu-west-2`. You may see other locations in documentation.
+
 
 ### Remote debugging (VS Code + Docker)
 ```bash
